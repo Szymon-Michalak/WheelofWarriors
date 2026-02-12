@@ -38,6 +38,11 @@ const center = size / 2;
 const radius = size * 0.46;
 const innerDisk = size * 0.19;
 const pointerAngle = 0;
+const wheelCacheCanvas = document.createElement("canvas");
+wheelCacheCanvas.width = size;
+wheelCacheCanvas.height = size;
+const wheelCacheCtx = wheelCacheCanvas.getContext("2d");
+let wheelCacheKey = "";
 
 let rotation = -Math.PI / 2;
 let spinning = false;
@@ -173,7 +178,8 @@ function launchConfetti() {
   if (!winnerModal) return;
 
   const colors = ["#ffd84d", "#4ca5ff", "#ff6767", "#5ee68b", "#f7f7ff"];
-  const count = 90;
+  const count = 42;
+  const fragment = document.createDocumentFragment();
 
   for (let i = 0; i < count; i++) {
     const piece = document.createElement("span");
@@ -183,113 +189,136 @@ function launchConfetti() {
     piece.style.setProperty("--dr", `${-300 + Math.random() * 600}deg`);
     piece.style.background = colors[Math.floor(Math.random() * colors.length)];
     piece.style.animationDelay = `${Math.random() * 120}ms`;
-    piece.style.animationDuration = `${760 + Math.random() * 520}ms`;
-    winnerModal.appendChild(piece);
+    piece.style.animationDuration = `${700 + Math.random() * 360}ms`;
+    fragment.appendChild(piece);
     setTimeout(() => piece.remove(), 1600);
   }
+
+  winnerModal.appendChild(fragment);
 }
 
 function drawWheel() {
-  ctx.clearRect(0, 0, size, size);
+  const cacheKey = `${names.join("\u0001")}|${showHint ? 1 : 0}|${centerLogoLoaded ? 1 : 0}`;
+  if (cacheKey !== wheelCacheKey) {
+    renderWheelStatic(wheelCacheCtx);
+    wheelCacheKey = cacheKey;
+  }
 
+  ctx.clearRect(0, 0, size, size);
   ctx.save();
   ctx.translate(center, center);
   ctx.rotate(rotation);
+  ctx.drawImage(wheelCacheCanvas, -center, -center, size, size);
+  ctx.restore();
+}
+
+function renderWheelStatic(drawCtx) {
+  drawCtx.clearRect(0, 0, size, size);
+  drawCtx.save();
+  drawCtx.translate(center, center);
 
   const segmentAngle = getSegmentAngle();
-
   for (let i = 0; i < names.length; i++) {
     const start = i * segmentAngle;
     const fill = palette[i % palette.length];
 
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.arc(0, 0, radius, start, start + segmentAngle);
-    ctx.closePath();
-    ctx.fillStyle = fill;
-    ctx.fill();
+    drawCtx.beginPath();
+    drawCtx.moveTo(0, 0);
+    drawCtx.arc(0, 0, radius, start, start + segmentAngle);
+    drawCtx.closePath();
+    drawCtx.fillStyle = fill;
+    drawCtx.fill();
 
-    ctx.save();
-    ctx.rotate(start + segmentAngle / 2);
-    ctx.fillStyle = textColor(fill);
+    drawCtx.save();
+    drawCtx.rotate(start + segmentAngle / 2);
+    drawCtx.fillStyle = textColor(fill);
     const outerPad = 24;
     const innerPad = 24;
     const available = radius - innerDisk - outerPad - innerPad;
     const targetFont = 58;
-    ctx.font = `500 ${targetFont}px 'Trebuchet MS', 'Avenir Next', sans-serif`;
-    const widthAtTarget = ctx.measureText(names[i]).width || 1;
+    drawCtx.font = `500 ${targetFont}px 'Trebuchet MS', 'Avenir Next', sans-serif`;
+    const widthAtTarget = drawCtx.measureText(names[i]).width || 1;
     const fitScale = Math.min(1, available / widthAtTarget);
     const fontSize = Math.max(30, Math.floor(targetFont * fitScale));
-    ctx.font = `500 ${fontSize}px 'Trebuchet MS', 'Avenir Next', sans-serif`;
-    const width = ctx.measureText(names[i]).width;
+    drawCtx.font = `500 ${fontSize}px 'Trebuchet MS', 'Avenir Next', sans-serif`;
+    const width = drawCtx.measureText(names[i]).width;
     const maxAllowed = Math.max(available, 1);
     const safeWidth = Math.min(width, maxAllowed);
     const centerRadius = innerDisk + innerPad + safeWidth / 2;
-    ctx.translate(centerRadius, 0);
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(names[i], 0, 0);
-    ctx.restore();
+    drawCtx.translate(centerRadius, 0);
+    drawCtx.textAlign = "center";
+    drawCtx.textBaseline = "middle";
+    drawCtx.fillText(names[i], 0, 0);
+    drawCtx.restore();
   }
 
-  ctx.beginPath();
-  ctx.arc(0, 0, radius + 2, 0, Math.PI * 2);
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = "rgba(0,0,0,0.18)";
-  ctx.stroke();
+  drawCtx.beginPath();
+  drawCtx.arc(0, 0, radius + 2, 0, Math.PI * 2);
+  drawCtx.lineWidth = 6;
+  drawCtx.strokeStyle = "rgba(0,0,0,0.18)";
+  drawCtx.stroke();
 
-  ctx.beginPath();
-  ctx.arc(0, 0, innerDisk + 18, 0, Math.PI * 2);
-  ctx.fillStyle = "#2d5fb8";
-  ctx.fill();
+  drawCtx.beginPath();
+  drawCtx.arc(0, 0, innerDisk + 18, 0, Math.PI * 2);
+  drawCtx.fillStyle = "#2d5fb8";
+  drawCtx.fill();
 
-  ctx.beginPath();
-  ctx.arc(0, 0, innerDisk + 12, 0, Math.PI * 2);
-  ctx.lineWidth = 8;
-  ctx.strokeStyle = "#efb92d";
-  ctx.stroke();
+  drawCtx.beginPath();
+  drawCtx.arc(0, 0, innerDisk + 12, 0, Math.PI * 2);
+  drawCtx.lineWidth = 8;
+  drawCtx.strokeStyle = "#efb92d";
+  drawCtx.stroke();
 
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(0, 0, innerDisk, 0, Math.PI * 2);
-  ctx.clip();
+  drawCtx.save();
+  drawCtx.beginPath();
+  drawCtx.arc(0, 0, innerDisk, 0, Math.PI * 2);
+  drawCtx.clip();
   if (centerLogoLoaded) {
-    ctx.drawImage(centerLogo, -innerDisk, -innerDisk, innerDisk * 2, innerDisk * 2);
+    drawCtx.drawImage(centerLogo, -innerDisk, -innerDisk, innerDisk * 2, innerDisk * 2);
   } else {
-    ctx.fillStyle = "#234b97";
-    ctx.fillRect(-innerDisk, -innerDisk, innerDisk * 2, innerDisk * 2);
+    drawCtx.fillStyle = "#234b97";
+    drawCtx.fillRect(-innerDisk, -innerDisk, innerDisk * 2, innerDisk * 2);
   }
-  ctx.restore();
+  drawCtx.restore();
 
   if (showHint) {
-    drawArcText("Click to spin", radius * 0.52, -2.32, -0.78, 1, "700 48px 'Avenir Next', sans-serif");
+    drawArcText(
+      "Click to spin",
+      radius * 0.52,
+      -2.32,
+      -0.78,
+      1,
+      "700 48px 'Avenir Next', sans-serif",
+      drawCtx
+    );
     drawArcText(
       "or press ctrl+enter",
       radius * 0.68,
       0.55,
       2.2,
       -1,
-      "700 44px 'Avenir Next', sans-serif"
+      "700 44px 'Avenir Next', sans-serif",
+      drawCtx
     );
   }
 
-  ctx.restore();
+  drawCtx.restore();
 }
 
-function drawArcText(text, arcRadius, startAngle, endAngle, tangent, font) {
+function drawArcText(text, arcRadius, startAngle, endAngle, tangent, font, drawCtx = ctx) {
   const letters = [...text];
 
-  ctx.save();
-  ctx.fillStyle = "#fff";
-  ctx.font = font;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.38)";
-  ctx.shadowBlur = 8;
-  ctx.shadowOffsetY = 4;
+  drawCtx.save();
+  drawCtx.fillStyle = "#fff";
+  drawCtx.font = font;
+  drawCtx.textAlign = "center";
+  drawCtx.textBaseline = "middle";
+  drawCtx.shadowColor = "rgba(0, 0, 0, 0.38)";
+  drawCtx.shadowBlur = 8;
+  drawCtx.shadowOffsetY = 4;
 
   const letterSpacingPx = 1.5;
-  const widths = letters.map((letter) => ctx.measureText(letter).width);
+  const widths = letters.map((letter) => drawCtx.measureText(letter).width);
   const totalWidth =
     widths.reduce((sum, width) => sum + width, 0) + letterSpacingPx * Math.max(letters.length - 1, 0);
   const availableArc = Math.abs(endAngle - startAngle) * arcRadius;
@@ -302,19 +331,19 @@ function drawArcText(text, arcRadius, startAngle, endAngle, tangent, font) {
     const halfAdvance = (charWidth / arcRadius) * 0.5 * direction;
     cursor += halfAdvance;
 
-    ctx.save();
-    ctx.rotate(cursor);
-    ctx.translate(arcRadius, 0);
-    ctx.rotate(tangent * Math.PI / 2);
-    if (fitScale !== 1) ctx.scale(fitScale, fitScale);
-    ctx.fillText(letters[i], 0, 0);
-    ctx.restore();
+    drawCtx.save();
+    drawCtx.rotate(cursor);
+    drawCtx.translate(arcRadius, 0);
+    drawCtx.rotate(tangent * Math.PI / 2);
+    if (fitScale !== 1) drawCtx.scale(fitScale, fitScale);
+    drawCtx.fillText(letters[i], 0, 0);
+    drawCtx.restore();
 
     const spacing = i < letters.length - 1 ? letterSpacingPx * fitScale : 0;
     cursor += ((charWidth + spacing) / arcRadius) * 0.5 * direction;
   }
 
-  ctx.restore();
+  drawCtx.restore();
 }
 
 function playTick() {

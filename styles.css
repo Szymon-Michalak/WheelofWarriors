@@ -333,10 +333,10 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(10, 18, 34, 0.64);
-  backdrop-filter: blur(2px);
+  background: rgba(10, 18, 34, 0.5);
   z-index: 1000;
   padding: 20px;
+  will-change: opacity;
 }
 
 .winner-modal.hidden {
@@ -347,7 +347,8 @@ body {
   width: min(760px, 96vw);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.42);
+  will-change: transform, opacity;
 }
 
 .winner-card.celebrate {
@@ -407,8 +408,8 @@ body {
 .confetti-piece {
   position: absolute;
   top: 16%;
-  width: 10px;
-  height: 16px;
+  width: 8px;
+  height: 12px;
   border-radius: 2px;
   opacity: 0.95;
   pointer-events: none;
@@ -416,6 +417,7 @@ body {
   animation-name: confetti-fall;
   animation-timing-function: cubic-bezier(0.2, 0.6, 0.3, 1);
   animation-fill-mode: forwards;
+  will-change: transform, opacity;
 }
 
 @keyframes panel-enter {
