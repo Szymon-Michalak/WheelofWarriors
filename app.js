@@ -32,6 +32,9 @@ const winnerName = document.getElementById("winnerName");
 const winnerClose = document.getElementById("winnerClose");
 const winnerRemove = document.getElementById("winnerRemove");
 const winnerCard = document.querySelector(".winner-card");
+const hoverTooltip = document.createElement("div");
+hoverTooltip.className = "hover-tooltip hidden";
+document.body.appendChild(hoverTooltip);
 
 const size = canvas.width;
 const center = size / 2;
@@ -470,18 +473,48 @@ function formatTime(ms) {
   return `${minutes}:${seconds.toFixed(2).padStart(5, "0")}`;
 }
 
+function parseDateToMs(value) {
+  const raw = value.trim();
+  if (!raw) return null;
+
+  const direct = Date.parse(raw);
+  if (Number.isFinite(direct)) return direct;
+
+  const dmyDots = raw.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if (dmyDots) {
+    const [, d, m, y] = dmyDots;
+    return Date.UTC(Number(y), Number(m) - 1, Number(d));
+  }
+
+  const dmyDashes = raw.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (dmyDashes) {
+    const [, d, m, y] = dmyDashes;
+    return Date.UTC(Number(y), Number(m) - 1, Number(d));
+  }
+
+  return null;
+}
+
+function formatDate(ms) {
+  if (ms === null) return "Unknown date";
+  return new Date(ms).toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit"
+  });
+}
+
 function parseLine(line) {
   const trimmed = line.trim();
   if (!trimmed || trimmed.startsWith("#")) return null;
 
-  const byDash = trimmed.match(/^(.*?)\s*-\s*([0-9]+(?::[0-9]{1,2}(?:[.,][0-9]+)?|[.,][0-9]+))$/);
-  if (byDash) return { name: byDash[1].trim(), time: byDash[2].trim() };
+  const byDash = trimmed.match(
+    /^(.*?)\s*-\s*([0-9]+(?::[0-9]{1,2}(?:[.,][0-9]+)?|[.,][0-9]+))\s*-\s*(.+)$/
+  );
+  if (byDash) return { name: byDash[1].trim(), time: byDash[2].trim(), date: byDash[3].trim() };
 
   const byDelimiter = trimmed.split(/[;,|\t]/).map((part) => part.trim()).filter(Boolean);
-  if (byDelimiter.length >= 2) return { name: byDelimiter[0], time: byDelimiter[1] };
-
-  const bySpace = trimmed.match(/^(.*?)\s+([0-9]+(?::[0-9]{1,2}(?:[.,][0-9]+)?|[.,][0-9]+))$/);
-  if (bySpace) return { name: bySpace[1].trim(), time: bySpace[2].trim() };
+  if (byDelimiter.length >= 3) return { name: byDelimiter[0], time: byDelimiter[1], date: byDelimiter[2] };
 
   return null;
 }
@@ -490,6 +523,8 @@ function renderRanking(rows) {
   rankingList.innerHTML = "";
   for (const row of rows) {
     const item = document.createElement("li");
+    const achievedLabel = `Achieved: ${formatDate(row.achievedAt)}`;
+    item.dataset.tip = achievedLabel;
 
     const name = document.createElement("span");
     name.className = "rank-name";
@@ -498,10 +533,47 @@ function renderRanking(rows) {
     const time = document.createElement("span");
     time.className = "rank-time";
     time.textContent = formatTime(row.ms);
+    time.setAttribute("aria-label", achievedLabel);
+    time.tabIndex = 0;
 
     item.append(name, time);
     rankingList.appendChild(item);
   }
+}
+
+function showTooltip(text, x, y) {
+  hoverTooltip.textContent = text;
+  hoverTooltip.classList.remove("hidden");
+  hoverTooltip.style.left = `${x + 12}px`;
+  hoverTooltip.style.top = `${y - 12}px`;
+}
+
+function hideTooltip() {
+  hoverTooltip.classList.add("hidden");
+}
+
+function setupRankingTooltipHandlers() {
+  if (!rankingList) return;
+
+  rankingList.addEventListener("pointermove", (event) => {
+    const target = event.target.closest("li");
+    if (!target || !target.dataset.tip) {
+      hideTooltip();
+      return;
+    }
+    showTooltip(target.dataset.tip, event.clientX, event.clientY);
+  });
+
+  rankingList.addEventListener("pointerleave", hideTooltip);
+
+  rankingList.addEventListener("focusin", (event) => {
+    const target = event.target.closest("li");
+    if (!target || !target.dataset.tip) return;
+    const rect = target.getBoundingClientRect();
+    showTooltip(target.dataset.tip, rect.right, rect.top);
+  });
+
+  rankingList.addEventListener("focusout", hideTooltip);
 }
 
 async function loadRanking() {
@@ -517,17 +589,18 @@ async function loadRanking() {
       const parsed = parseLine(line);
       if (!parsed) continue;
       const ms = parseTimeToMs(parsed.time);
-      if (ms === null) continue;
+      const achievedAt = parseDateToMs(parsed.date);
+      if (ms === null || achievedAt === null) continue;
 
       const currentBest = bestByName.get(parsed.name);
-      if (currentBest === undefined || ms < currentBest) {
-        bestByName.set(parsed.name, ms);
+      if (currentBest === undefined || ms < currentBest.ms || (ms === currentBest.ms && achievedAt < currentBest.achievedAt)) {
+        bestByName.set(parsed.name, { ms, achievedAt });
       }
     }
 
     const top = [...bestByName.entries()]
-      .map(([name, ms]) => ({ name, ms }))
-      .sort((a, b) => a.ms - b.ms || a.name.localeCompare(b.name))
+      .map(([name, data]) => ({ name, ms: data.ms, achievedAt: data.achievedAt }))
+      .sort((a, b) => a.ms - b.ms || a.achievedAt - b.achievedAt || a.name.localeCompare(b.name))
       .slice(0, 5);
 
     renderRanking(top);
@@ -578,3 +651,4 @@ if (winnerRemove) {
 drawWheel();
 loadRanking();
 loadGoalAndShoutoutSources();
+setupRankingTooltipHandlers();

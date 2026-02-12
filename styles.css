@@ -216,6 +216,24 @@ body {
   box-shadow: var(--panel-shadow-soft);
 }
 
+.ranking-list li:nth-child(1) {
+  background: linear-gradient(90deg, rgba(255, 236, 164, 0.65), rgba(255, 255, 255, 0.9));
+  border-color: rgba(189, 144, 19, 0.55);
+  box-shadow: 0 0 0 1px rgba(189, 144, 19, 0.15), 0 10px 20px rgba(189, 144, 19, 0.16);
+}
+
+.ranking-list li:nth-child(2) {
+  background: linear-gradient(90deg, rgba(230, 238, 252, 0.72), rgba(255, 255, 255, 0.9));
+  border-color: rgba(127, 146, 179, 0.45);
+  box-shadow: 0 0 0 1px rgba(127, 146, 179, 0.14), 0 10px 20px rgba(72, 95, 131, 0.14);
+}
+
+.ranking-list li:nth-child(3) {
+  background: linear-gradient(90deg, rgba(242, 218, 197, 0.68), rgba(255, 255, 255, 0.9));
+  border-color: rgba(160, 110, 70, 0.45);
+  box-shadow: 0 0 0 1px rgba(160, 110, 70, 0.14), 0 10px 20px rgba(118, 82, 53, 0.14);
+}
+
 .ranking-list li::before {
   content: counter(rank);
   width: 28px;
@@ -242,6 +260,28 @@ body {
 .ranking-list li:nth-child(3)::before {
   color: #3f2715;
   background: linear-gradient(170deg, #efcfb2, var(--bronze));
+}
+
+.ranking-list li:nth-child(-n + 3) .rank-name {
+  font-weight: 800;
+}
+
+.ranking-list li:nth-child(1) .rank-time {
+  border-color: rgba(189, 144, 19, 0.55);
+  color: #6e4b00;
+  background: rgba(255, 233, 154, 0.44);
+}
+
+.ranking-list li:nth-child(2) .rank-time {
+  border-color: rgba(127, 146, 179, 0.45);
+  color: #334968;
+  background: rgba(214, 227, 248, 0.42);
+}
+
+.ranking-list li:nth-child(3) .rank-time {
+  border-color: rgba(160, 110, 70, 0.45);
+  color: #6b4128;
+  background: rgba(236, 203, 177, 0.42);
 }
 
 .rank-name {
@@ -333,7 +373,9 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(10, 18, 34, 0.5);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(26, 79, 170, 0.22), rgba(10, 18, 34, 0.62)),
+    rgba(10, 18, 34, 0.5);
   z-index: 1000;
   padding: 20px;
   will-change: opacity;
@@ -344,10 +386,14 @@ body {
 }
 
 .winner-card {
-  width: min(760px, 96vw);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.42);
+  position: relative;
+  width: min(640px, 94vw);
+  border-radius: 24px;
+  overflow: visible;
+  font-family: "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
+  background: linear-gradient(165deg, rgba(250, 252, 255, 0.96), rgba(237, 243, 252, 0.95));
+  border: 1px solid rgba(146, 170, 210, 0.42);
+  box-shadow: 0 24px 54px rgba(9, 18, 34, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.72);
   will-change: transform, opacity;
 }
 
@@ -356,24 +402,38 @@ body {
 }
 
 .winner-header {
-  background: linear-gradient(180deg, #12ba35, #089828);
-  color: #001304;
-  font-size: 1.8rem;
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #2d66ca, #1d4da5);
+  color: #f7faff;
+  border: 1px solid rgba(156, 189, 243, 0.55);
+  border-radius: 999px;
+  font-size: 0.9rem;
   font-weight: 700;
-  padding: 14px 20px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  box-shadow: 0 8px 16px rgba(28, 73, 154, 0.35);
+  white-space: nowrap;
 }
 
 .winner-body {
-  background: #191b21;
-  color: #f5f6f8;
-  padding: 26px 20px 16px;
+  color: var(--ink);
+  padding: 46px 24px 18px;
+  text-align: center;
 }
 
 .winner-name {
   margin: 0;
-  font-size: clamp(2.1rem, 6vw, 4.2rem);
+  font-size: clamp(2.4rem, 7vw, 4.3rem);
   text-align: center;
-  font-weight: 500;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #1d468f;
+  text-shadow: none;
 }
 
 .winner-card.celebrate .winner-name {
@@ -381,28 +441,65 @@ body {
 }
 
 .winner-actions {
-  margin-top: 20px;
+  margin-top: 18px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(19, 34, 61, 0.12);
 }
 
 .winner-btn {
-  border: 0;
-  border-radius: 8px;
-  padding: 9px 16px;
-  font-size: 1.12rem;
+  border: 1px solid rgba(19, 34, 61, 0.16);
+  border-radius: 12px;
+  min-width: 120px;
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
 }
 
 .winner-close {
-  background: transparent;
-  color: #edf0f5;
+  background: rgba(255, 255, 255, 0.95);
+  color: #24426e;
 }
 
 .winner-remove {
-  background: linear-gradient(180deg, #6a97ee, #4f7fdc);
+  border-color: rgba(25, 80, 168, 0.5);
+  background: linear-gradient(180deg, #2f69d0, #1f4fa9);
   color: #f8fbff;
+}
+
+.winner-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(17, 32, 58, 0.2);
+}
+
+.winner-btn:active {
+  transform: translateY(0);
+}
+
+.hover-tooltip {
+  position: fixed;
+  z-index: 3000;
+  transform: translate(-50%, -100%);
+  background: rgba(15, 22, 36, 0.96);
+  color: #f6f8fc;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  padding: 6px 9px;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34);
+}
+
+.hover-tooltip.hidden {
+  display: none;
 }
 
 .confetti-piece {
@@ -524,5 +621,13 @@ body {
 
   .ranking-panel {
     flex: initial;
+  }
+
+  .winner-actions {
+    flex-direction: column-reverse;
+  }
+
+  .winner-btn {
+    width: 100%;
   }
 }
