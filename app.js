@@ -25,10 +25,13 @@ const soundEnabled = true;
 const rankingList = document.getElementById("rankingList");
 const rankingStatus = document.getElementById("rankingStatus");
 const alarmButton = document.getElementById("alarmButton");
+const goalText = document.getElementById("goalText");
+const shoutoutText = document.getElementById("shoutoutText");
 const winnerModal = document.getElementById("winnerModal");
 const winnerName = document.getElementById("winnerName");
 const winnerClose = document.getElementById("winnerClose");
 const winnerRemove = document.getElementById("winnerRemove");
+const winnerCard = document.querySelector(".winner-card");
 
 const size = canvas.width;
 const center = size / 2;
@@ -44,6 +47,8 @@ let lastTickIndex = 0;
 let audioCtx = null;
 let showHint = true;
 let lastWinner = null;
+let sprintGoals = [];
+let shoutoutTemplates = [];
 
 const centerLogo = new Image();
 let centerLogoLoaded = false;
@@ -53,6 +58,27 @@ centerLogo.onload = () => {
   drawWheel();
 };
 
+const defaultSprintGoals = [
+  "being cool",
+  "zero blockers",
+  "fewer meetings",
+  "ship it today",
+  "clean handoff",
+  "no regressions",
+  "beat yesterday",
+  "focus mode",
+  "quick wins",
+  "quality first"
+];
+
+const defaultShoutouts = [
+  "This day is for {name} - {name} is the best.",
+  "{name} keeps the vibe high and the work sharp.",
+  "Big respect to {name} for showing up strong.",
+  "{name} brings serious warrior energy today.",
+  "{name} is unstoppable today."
+];
+
 function textColor(hex) {
   const value = hex.replace("#", "");
   const r = parseInt(value.slice(0, 2), 16);
@@ -60,6 +86,56 @@ function textColor(hex) {
   const b = parseInt(value.slice(4, 6), 16);
   const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
   return lum < 0.55 ? "#f6f6f6" : "#111";
+}
+
+function setSprintGoal() {
+  if (!goalText) return;
+  if (!sprintGoals.length) sprintGoals = [...defaultSprintGoals];
+  const goal = sprintGoals[Math.floor(Math.random() * sprintGoals.length)];
+  goalText.textContent = goal;
+}
+
+function setShoutout(fixedName = null) {
+  if (!shoutoutText) return;
+  if (!names.length) {
+    shoutoutText.textContent = "No warriors on the wheel yet.";
+    return;
+  }
+  if (!shoutoutTemplates.length) shoutoutTemplates = [...defaultShoutouts];
+  const picked = fixedName ?? names[Math.floor(Math.random() * names.length)];
+  const template = shoutoutTemplates[Math.floor(Math.random() * shoutoutTemplates.length)];
+  shoutoutText.textContent = template.replaceAll("{name}", picked);
+}
+
+function parseTextList(text) {
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"));
+}
+
+async function loadLinesFromFile(fileName) {
+  const response = await fetch(fileName, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Cannot load ${fileName}`);
+  const text = await response.text();
+  return parseTextList(text);
+}
+
+async function loadGoalAndShoutoutSources() {
+  try {
+    const [goals, shoutouts] = await Promise.all([
+      loadLinesFromFile("sprint-goals.txt"),
+      loadLinesFromFile("daily-shoutouts.txt")
+    ]);
+    sprintGoals = goals.length ? goals : [...defaultSprintGoals];
+    shoutoutTemplates = shoutouts.length ? shoutouts : [...defaultShoutouts];
+  } catch {
+    sprintGoals = [...defaultSprintGoals];
+    shoutoutTemplates = [...defaultShoutouts];
+  }
+
+  setSprintGoal();
+  setShoutout();
 }
 
 function getSegmentAngle() {
@@ -81,10 +157,36 @@ function showWinnerModal(name) {
   lastWinner = name;
   winnerName.textContent = name;
   winnerModal.classList.remove("hidden");
+  if (winnerCard) {
+    winnerCard.classList.remove("celebrate");
+    void winnerCard.offsetWidth;
+    winnerCard.classList.add("celebrate");
+  }
+  launchConfetti();
 }
 
 function hideWinnerModal() {
   winnerModal.classList.add("hidden");
+}
+
+function launchConfetti() {
+  if (!winnerModal) return;
+
+  const colors = ["#ffd84d", "#4ca5ff", "#ff6767", "#5ee68b", "#f7f7ff"];
+  const count = 90;
+
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.style.left = `${15 + Math.random() * 70}%`;
+    piece.style.setProperty("--dx", `${-160 + Math.random() * 320}px`);
+    piece.style.setProperty("--dr", `${-300 + Math.random() * 600}deg`);
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = `${Math.random() * 120}ms`;
+    piece.style.animationDuration = `${760 + Math.random() * 520}ms`;
+    winnerModal.appendChild(piece);
+    setTimeout(() => piece.remove(), 1600);
+  }
 }
 
 function drawWheel() {
@@ -301,6 +403,7 @@ function spin(force = false) {
     rotation = target;
     drawWheel();
     spinning = false;
+    setShoutout(winnerAtStop);
     showWinnerModal(winnerAtStop ?? "Unknown");
   }
 
@@ -310,6 +413,7 @@ function spin(force = false) {
 function triggerAlarmMode() {
   names.fill("Jędrzej");
   rankingStatus.textContent = "Alarm mode: all wheel entries changed to Jędrzej.";
+  setShoutout("Jędrzej");
   spin(true);
 }
 
@@ -395,7 +499,7 @@ async function loadRanking() {
     const top = [...bestByName.entries()]
       .map(([name, ms]) => ({ name, ms }))
       .sort((a, b) => a.ms - b.ms || a.name.localeCompare(b.name))
-      .slice(0, 10);
+      .slice(0, 5);
 
     renderRanking(top);
     rankingStatus.textContent = top.length
@@ -437,9 +541,11 @@ if (winnerRemove) {
     const index = names.indexOf(lastWinner);
     if (index >= 0) names.splice(index, 1);
     hideWinnerModal();
+    setShoutout();
     drawWheel();
   });
 }
 
 drawWheel();
 loadRanking();
+loadGoalAndShoutoutSources();

@@ -9,6 +9,16 @@
   <body>
     <main class="app">
       <section class="wheel-area">
+        <section class="goal-card" aria-label="Sprint goal">
+          <p class="goal-label">Sprint goal:</p>
+          <p id="goalText" class="goal-text"></p>
+        </section>
+
+        <section class="shoutout-card" aria-label="Daily shoutout">
+          <p class="shoutout-label">Daily shoutout:</p>
+          <p id="shoutoutText" class="shoutout-text"></p>
+        </section>
+
         <div class="wheel-stack">
           <canvas id="wheelCanvas" width="980" height="980" aria-label="Spinning wheel"></canvas>
           <div class="pointer" aria-hidden="true"></div>
@@ -16,13 +26,13 @@
       </section>
 
       <aside class="side-column">
-        <section class="ranking-panel panel-card" aria-label="Top 10 fastest times">
-          <h2>Top 10 Fastest</h2>
+        <section class="ranking-panel panel-card" aria-label="Top 5 fastest times">
+          <h2>Top 5 Fastest</h2>
           <ol id="rankingList" class="ranking-list"></ol>
           <p id="rankingStatus" class="ranking-status"></p>
         </section>
 
-        <section class="alarm-wrap panel-card">
+        <section class="alarm-wrap">
           <section class="alarm-panel" aria-label="Emergency button">
             <p class="alarm-title">Alarm</p>
             <button id="alarmButton" class="alarm-button" type="button" aria-label="Emergency spin button"></button>

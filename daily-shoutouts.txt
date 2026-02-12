@@ -1,0 +1,7 @@
+# One shoutout template per line
+# Use {name} placeholder for selected wheel person
+This day is for {name} - {name} is the best.
+{name} keeps the team focused and strong.
+Big respect to {name} for today’s energy.
+{name} is absolutely crushing it today.
+{name} brings warrior-level momentum.

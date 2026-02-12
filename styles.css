@@ -1,11 +1,12 @@
 :root {
-  --bg-top: #f1f1f2;
-  --bg-bottom: #d9dde3;
+  --bg-top: #eef2f8;
+  --bg-bottom: #cfd8e6;
   --ink: #13223d;
   --muted: #55627a;
   --panel: #f8fafc;
   --panel-border: rgba(16, 31, 56, 0.1);
-  --panel-shadow: 0 20px 45px rgba(15, 28, 52, 0.18);
+  --panel-shadow: 0 18px 40px rgba(15, 28, 52, 0.16);
+  --panel-shadow-soft: 0 8px 22px rgba(15, 28, 52, 0.1);
   --blue: #1a4faa;
   --blue-dark: #163a82;
   --gold: #f1c232;
@@ -22,6 +23,7 @@ body {
   min-height: 100vh;
   font-family: "Avenir Next Condensed", "Trebuchet MS", "Segoe UI", sans-serif;
   color: var(--ink);
+  overflow: hidden;
   background:
     radial-gradient(1200px 700px at 12% 15%, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0) 68%),
     repeating-linear-gradient(
@@ -38,28 +40,30 @@ body {
   display: grid;
   grid-template-columns: minmax(560px, 1fr) 360px;
   gap: 20px;
-  min-height: 100vh;
+  height: 100vh;
   align-items: center;
   padding: 16px;
 }
 
 .side-column {
-  display: grid;
-  grid-template-rows: 1fr auto;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
-  align-self: stretch;
+  height: calc(100vh - 32px);
+  min-height: 0;
 }
 
 .panel-card {
   background:
-    linear-gradient(170deg, rgba(255, 255, 255, 0.95), rgba(244, 247, 252, 0.95)),
+    linear-gradient(170deg, rgba(255, 255, 255, 0.96), rgba(245, 248, 253, 0.94)),
     var(--panel);
-  border-radius: 20px;
+  border-radius: 18px;
   border: 1px solid var(--panel-border);
   box-shadow: var(--panel-shadow);
 }
 
 .wheel-area {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -68,11 +72,72 @@ body {
   animation: wheel-enter 420ms ease-out;
 }
 
+.wheel-area::before {
+  content: "";
+  position: absolute;
+  inset: 2.5% 7% 2.5% 4%;
+  border-radius: 26px;
+  background: radial-gradient(circle at 28% 25%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 58%);
+  pointer-events: none;
+}
+
+.goal-card {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  padding: 14px 16px;
+  min-width: 260px;
+  max-width: 360px;
+}
+
+.goal-label {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.goal-text {
+  margin: 4px 0 0;
+  font-size: 1.65rem;
+  line-height: 1.12;
+  font-weight: 800;
+  color: #112952;
+}
+
+.shoutout-card {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 2;
+  padding: 12px 16px;
+  min-width: 320px;
+  max-width: 480px;
+}
+
+.shoutout-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shoutout-text {
+  margin: 6px 0 0;
+  font-size: 1.08rem;
+  line-height: 1.32;
+  font-weight: 700;
+  color: #16305d;
+}
+
 .wheel-stack {
   position: relative;
-  width: min(90vh, 92vw, 980px);
+  width: min(84vh, 88vw, 940px);
   aspect-ratio: 1;
-  filter: drop-shadow(0 16px 24px rgba(20, 28, 45, 0.28));
+  filter: drop-shadow(0 18px 28px rgba(20, 28, 45, 0.3));
 }
 
 #wheelCanvas {
@@ -90,23 +155,25 @@ body {
   height: 0;
   border-top: 28px solid transparent;
   border-bottom: 28px solid transparent;
-  border-right: 72px solid #d9dce2;
-  filter: drop-shadow(-4px 5px 3px rgba(0, 0, 0, 0.25));
+  border-right: 72px solid #ebedf2;
+  filter: drop-shadow(-4px 6px 4px rgba(0, 0, 0, 0.25));
 }
 
 .ranking-panel {
   padding: 18px 16px 14px;
-  height: min(66vh, 720px);
-  overflow: auto;
+  flex: 0 0 auto;
+  overflow: hidden;
   animation: panel-enter 460ms ease-out;
 }
 
 .ranking-panel h2 {
   margin: 0;
-  font-size: 1.55rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(19, 34, 61, 0.12);
 }
 
 .ranking-panel h2::after {
@@ -136,10 +203,17 @@ body {
   grid-template-columns: 36px 1fr auto;
   align-items: center;
   gap: 10px;
-  border-radius: 12px;
+  border-radius: 11px;
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(19, 34, 61, 0.1);
   padding: 8px 10px;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.ranking-list li:hover {
+  transform: translateY(-1px);
+  border-color: rgba(26, 79, 170, 0.32);
+  box-shadow: var(--panel-shadow-soft);
 }
 
 .ranking-list li::before {
@@ -183,7 +257,7 @@ body {
   font-weight: 800;
   letter-spacing: 0.02em;
   color: var(--blue-dark);
-  background: rgba(30, 82, 173, 0.09);
+  background: rgba(30, 82, 173, 0.11);
   border: 1px solid rgba(30, 82, 173, 0.2);
   border-radius: 999px;
   padding: 4px 10px;
@@ -197,24 +271,23 @@ body {
 }
 
 .alarm-panel {
-  background: #f0c233;
   border: 10px solid transparent;
-  border-image: repeating-linear-gradient(
-      -45deg,
-      #111 0 8px,
-      #f0c233 8px 16px
-    )
-    10 round;
-  border-radius: 4px;
+  border-radius: 18px;
+  background:
+    linear-gradient(#f0c233, #f0c233) padding-box,
+    repeating-linear-gradient(-45deg, #111 0 8px, #f0c233 8px 16px) border-box;
   padding: 10px 14px 12px;
   text-align: center;
   color: #111;
   text-transform: uppercase;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 140ms ease;
 }
 
 .alarm-wrap {
-  padding: 12px;
+  margin-top: auto;
+  padding: 0;
+  animation: panel-enter 520ms ease-out;
 }
 
 .alarm-title {
@@ -239,7 +312,7 @@ body {
 }
 
 .alarm-button:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.08);
 }
 
 .alarm-button:active,
@@ -250,7 +323,7 @@ body {
 
 .alarm-subtitle {
   margin: 10px 0 0;
-  font-size: 1.18rem;
+  font-size: 1.02rem;
   letter-spacing: 0.07em;
   line-height: 1.1;
 }
@@ -272,15 +345,19 @@ body {
 
 .winner-card {
   width: min(760px, 96vw);
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.48);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.5);
+}
+
+.winner-card.celebrate {
+  animation: winner-pop 360ms cubic-bezier(0.22, 0.96, 0.22, 1);
 }
 
 .winner-header {
-  background: #0aab2b;
+  background: linear-gradient(180deg, #12ba35, #089828);
   color: #001304;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
   padding: 14px 20px;
 }
@@ -296,6 +373,10 @@ body {
   font-size: clamp(2.1rem, 6vw, 4.2rem);
   text-align: center;
   font-weight: 500;
+}
+
+.winner-card.celebrate .winner-name {
+  animation: winner-glow 900ms ease-out;
 }
 
 .winner-actions {
@@ -319,8 +400,22 @@ body {
 }
 
 .winner-remove {
-  background: #5a89e3;
+  background: linear-gradient(180deg, #6a97ee, #4f7fdc);
   color: #f8fbff;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: 16%;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  opacity: 0.95;
+  pointer-events: none;
+  z-index: 1001;
+  animation-name: confetti-fall;
+  animation-timing-function: cubic-bezier(0.2, 0.6, 0.3, 1);
+  animation-fill-mode: forwards;
 }
 
 @keyframes panel-enter {
@@ -331,6 +426,46 @@ body {
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes winner-pop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.2;
+  }
+  70% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes winner-glow {
+  0% {
+    text-shadow: 0 0 0 rgba(255, 255, 255, 0.5);
+  }
+  35% {
+    text-shadow: 0 0 24px rgba(255, 255, 255, 0.55);
+  }
+  100% {
+    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translate(0, -30px) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), 320px) rotate(var(--dr));
+    opacity: 0;
   }
 }
 
@@ -346,26 +481,46 @@ body {
 }
 
 @media (max-width: 1140px) {
+  body {
+    overflow: auto;
+  }
+
   .app {
     grid-template-columns: 1fr;
-    align-items: start;
+    height: auto;
+    min-height: 100vh;
+    align-items: center;
     gap: 12px;
   }
 
   .side-column {
-    grid-template-rows: auto auto;
+    height: auto;
   }
 
   .wheel-area {
     min-height: auto;
   }
 
+  .goal-card {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-bottom: 10px;
+  }
+
+  .shoutout-card {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-top: 10px;
+    margin-bottom: 6px;
+  }
+
   .wheel-stack {
-    width: min(78vh, 96vw, 940px);
+    width: min(72vh, 94vw, 860px);
   }
 
   .ranking-panel {
-    height: auto;
-    max-height: none;
+    flex: initial;
   }
 }
