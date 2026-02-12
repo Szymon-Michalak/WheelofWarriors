@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Warriors Board</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="wheel-area">
+        <div class="wheel-stack">
+          <canvas id="wheelCanvas" width="980" height="980" aria-label="Spinning wheel"></canvas>
+          <div class="pointer" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <aside class="side-column">
+        <section class="ranking-panel panel-card" aria-label="Top 10 fastest times">
+          <h2>Top 10 Fastest</h2>
+          <ol id="rankingList" class="ranking-list"></ol>
+          <p id="rankingStatus" class="ranking-status"></p>
+        </section>
+
+        <section class="alarm-wrap panel-card">
+          <section class="alarm-panel" aria-label="Emergency button">
+            <p class="alarm-title">Alarm</p>
+            <button id="alarmButton" class="alarm-button" type="button" aria-label="Emergency spin button"></button>
+            <p class="alarm-subtitle">In case of emergency</p>
+            <p class="alarm-subtitle">push this button</p>
+          </section>
+        </section>
+      </aside>
+    </main>
+
+    <div id="winnerModal" class="winner-modal hidden" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+      <div class="winner-card">
+        <div class="winner-header" id="winnerTitle">We have a winner!</div>
+        <div class="winner-body">
+          <p id="winnerName" class="winner-name"></p>
+          <div class="winner-actions">
+            <button id="winnerClose" class="winner-btn winner-close" type="button">Close</button>
+            <button id="winnerRemove" class="winner-btn winner-remove" type="button">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
