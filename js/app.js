@@ -1,5 +1,5 @@
 import { els } from "./dom.js";
-import { state, palette } from "./state.js";
+import { state, palette, loadInitialNames } from "./state.js";
 import { createWheelController, pickWinnerIndex } from "./wheel.js";
 import { createMessageController } from "./messages.js";
 import { createWinnerModalController } from "./modal.js";
@@ -92,8 +92,24 @@ if (els.alarmButton) {
   });
 }
 
-wheel.drawWheel();
-ranking.loadRanking();
-ranking.setupTooltipHandlers();
-messages.loadSources();
-debug.setup();
+function renderBaseUi() {
+  wheel.drawWheel();
+  ranking.loadRanking();
+  ranking.setupTooltipHandlers();
+  messages.loadSources();
+  debug.setup();
+}
+
+async function initNames() {
+  try {
+    const loadedNames = await loadInitialNames();
+    state.names.splice(0, state.names.length, ...loadedNames);
+    refreshAlarmTargetOptions();
+    wheel.drawWheel();
+  } catch {
+    // keep defaults already rendered
+  }
+}
+
+renderBaseUi();
+initNames();

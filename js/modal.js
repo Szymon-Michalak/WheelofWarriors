@@ -116,7 +116,7 @@ export function createWinnerModalController({
     ctx.stroke();
 
     // winner header chip
-    const chipLabel = "MAMY ZWYCIĘZCĘ!";
+    const chipLabel = "NASTĘPNE DAILY POPROWADZI";
     const chipLabelSize = fitFontSize(ctx, chipLabel, 430, 62, 30);
     ctx.font = `800 ${chipLabelSize}px 'Avenir Next', 'Segoe UI', sans-serif`;
     const chipTextWidth = ctx.measureText(chipLabel).width;
