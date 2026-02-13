@@ -41,7 +41,6 @@ const wheel = createWheelController({
 
 const ranking = createRankingController({
   rankingList: els.rankingList,
-  rankingStatus: els.rankingStatus,
   hoverTooltip: els.hoverTooltip
 });
 
@@ -68,10 +67,6 @@ if (els.alarmButton) {
     setTimeout(() => els.alarmButton.classList.remove("armed"), 180);
 
     state.names.fill("Jędrzej");
-    if (els.rankingStatus) {
-      els.rankingStatus.textContent = "Alarm mode: all wheel entries changed to Jędrzej.";
-    }
-
     messages.setShoutout("Jędrzej");
     wheel.spin(true);
   });

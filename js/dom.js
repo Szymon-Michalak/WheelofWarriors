@@ -5,7 +5,6 @@ document.body.appendChild(hoverTooltip);
 export const els = {
   canvas: document.getElementById("wheelCanvas"),
   rankingList: document.getElementById("rankingList"),
-  rankingStatus: document.getElementById("rankingStatus"),
   alarmButton: document.getElementById("alarmButton"),
   goalText: document.getElementById("goalText"),
   shoutoutText: document.getElementById("shoutoutText"),

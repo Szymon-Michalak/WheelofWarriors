@@ -1,17 +1,19 @@
 :root {
   --bg-top: #eef2f8;
   --bg-bottom: #cfd8e6;
-  --ink: #13223d;
-  --muted: #55627a;
-  --panel: #f8fafc;
-  --panel-border: rgba(16, 31, 56, 0.1);
-  --panel-shadow: 0 18px 40px rgba(15, 28, 52, 0.16);
-  --panel-shadow-soft: 0 8px 22px rgba(15, 28, 52, 0.1);
-  --blue: #1a4faa;
-  --blue-dark: #163a82;
-  --gold: #f1c232;
-  --silver: #cfd6e6;
-  --bronze: #d9b68f;
+  --ink: #0c3c94;
+  --muted: #40557c;
+  --panel: #fff7e1;
+  --panel-border: rgba(12, 60, 148, 0.14);
+  --panel-shadow: 0 18px 40px rgba(15, 28, 52, 0.2);
+  --panel-shadow-soft: 0 8px 22px rgba(15, 28, 52, 0.14);
+  --blue: #0c3c94;
+  --blue-dark: #0c3c94;
+  --gold: #fbbb24;
+  --silver: #fcd67c;
+  --bronze: #a48c54;
+  --brown: #966a02;
+  --slate: #40557c;
 }
 
 * {
@@ -104,7 +106,7 @@ body {
   font-size: 1.65rem;
   line-height: 1.12;
   font-weight: 800;
-  color: #112952;
+  color: var(--blue-dark);
 }
 
 .shoutout-card {
@@ -130,7 +132,7 @@ body {
   font-size: 1.08rem;
   line-height: 1.32;
   font-weight: 700;
-  color: #16305d;
+  color: var(--blue-dark);
 }
 
 .wheel-stack {
@@ -162,7 +164,7 @@ body {
 .ranking-panel {
   padding: 18px 16px 14px;
   flex: 0 0 auto;
-  overflow: hidden;
+  overflow: visible;
   animation: panel-enter 460ms ease-out;
 }
 
@@ -210,6 +212,16 @@ body {
   transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
 }
 
+.ranking-list .rank-empty {
+  display: block;
+  grid-template-columns: none;
+  font-size: 0.95rem;
+  color: var(--muted);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.76);
+  border-style: dashed;
+}
+
 .ranking-list li:hover {
   transform: translateY(-1px);
   border-color: rgba(26, 79, 170, 0.32);
@@ -244,7 +256,7 @@ body {
   font-size: 0.86rem;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(160deg, #2c62c3, #1b458f);
+  background: linear-gradient(160deg, var(--slate), var(--blue));
 }
 
 .ranking-list li:nth-child(1)::before {
@@ -253,7 +265,7 @@ body {
 }
 
 .ranking-list li:nth-child(2)::before {
-  color: #2c3550;
+  color: var(--blue-dark);
   background: linear-gradient(170deg, #eff4ff, var(--silver));
 }
 
@@ -268,20 +280,20 @@ body {
 
 .ranking-list li:nth-child(1) .rank-time {
   border-color: rgba(189, 144, 19, 0.55);
-  color: #6e4b00;
+  color: var(--brown);
   background: rgba(255, 233, 154, 0.44);
 }
 
 .ranking-list li:nth-child(2) .rank-time {
-  border-color: rgba(127, 146, 179, 0.45);
-  color: #334968;
-  background: rgba(214, 227, 248, 0.42);
+  border-color: rgba(64, 85, 124, 0.45);
+  color: var(--slate);
+  background: rgba(205, 216, 238, 0.42);
 }
 
 .ranking-list li:nth-child(3) .rank-time {
-  border-color: rgba(160, 110, 70, 0.45);
-  color: #6b4128;
-  background: rgba(236, 203, 177, 0.42);
+  border-color: rgba(150, 106, 2, 0.45);
+  color: var(--brown);
+  background: rgba(236, 210, 163, 0.42);
 }
 
 .rank-name {
@@ -297,21 +309,16 @@ body {
   font-weight: 800;
   letter-spacing: 0.02em;
   color: var(--blue-dark);
-  background: rgba(30, 82, 173, 0.11);
-  border: 1px solid rgba(30, 82, 173, 0.2);
+  background: rgba(12, 60, 148, 0.11);
+  border: 1px solid rgba(12, 60, 148, 0.2);
   border-radius: 999px;
   padding: 4px 10px;
 }
 
-.ranking-status {
-  margin: 12px 0 0;
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
-  color: var(--muted);
-}
-
 .debug-panel {
   padding: 10px 12px 12px;
+  position: relative;
+  z-index: 20;
 }
 
 .debug-panel summary {
@@ -321,16 +328,27 @@ body {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #24426e;
-}
-
-.debug-panel[open] summary {
-  margin-bottom: 10px;
+  color: var(--blue-dark);
 }
 
 .debug-body {
-  display: grid;
+  display: none;
   gap: 8px;
+}
+
+.debug-panel[open] .debug-body {
+  display: grid;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border);
+  background:
+    linear-gradient(170deg, rgba(255, 255, 255, 0.98), rgba(245, 248, 253, 0.96)),
+    var(--panel);
+  box-shadow: var(--panel-shadow);
 }
 
 .debug-controls {
@@ -343,7 +361,7 @@ body {
 .debug-label {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #4b5f81;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -355,12 +373,12 @@ body {
   padding: 6px 8px;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #223a64;
+  color: var(--blue-dark);
   background: #fff;
 }
 
 .debug-run {
-  border: 1px solid rgba(25, 80, 168, 0.45);
+  border: 1px solid rgba(12, 60, 148, 0.45);
   border-radius: 9px;
   padding: 7px 10px;
   font-size: 0.84rem;
@@ -368,14 +386,14 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #f8fbff;
-  background: linear-gradient(180deg, #2f69d0, #1f4fa9);
+  background: linear-gradient(180deg, var(--slate), var(--blue));
   cursor: pointer;
 }
 
 .sim-meta {
   margin: 0;
   font-size: 0.78rem;
-  color: #4f6181;
+  color: var(--muted);
 }
 
 .sim-results {
@@ -389,7 +407,7 @@ body {
 
 .sim-results li {
   font-size: 0.84rem;
-  color: #1f355a;
+  color: var(--blue-dark);
   font-variant-numeric: tabular-nums;
 }
 
@@ -397,8 +415,8 @@ body {
   border: 10px solid transparent;
   border-radius: 18px;
   background:
-    linear-gradient(#f0c233, #f0c233) padding-box,
-    repeating-linear-gradient(-45deg, #111 0 8px, #f0c233 8px 16px) border-box;
+    linear-gradient(var(--gold), var(--gold)) padding-box,
+    repeating-linear-gradient(-45deg, #111 0 8px, var(--gold) 8px 16px) border-box;
   padding: 10px 14px 12px;
   text-align: center;
   color: #111;
@@ -489,7 +507,7 @@ body {
   top: -18px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, #2d66ca, #1d4da5);
+  background: linear-gradient(180deg, #40557c, #0c3c94);
   color: #f7faff;
   border: 1px solid rgba(156, 189, 243, 0.55);
   border-radius: 999px;
@@ -515,7 +533,7 @@ body {
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0;
-  color: #1d468f;
+  color: var(--blue-dark);
   text-shadow: none;
 }
 
@@ -547,18 +565,18 @@ body {
 
 .winner-close {
   background: rgba(255, 255, 255, 0.95);
-  color: #24426e;
+  color: var(--slate);
 }
 
 .winner-copy {
-  border-color: rgba(32, 86, 172, 0.34);
+  border-color: rgba(12, 60, 148, 0.34);
   background: rgba(245, 249, 255, 0.98);
-  color: #2056ac;
+  color: var(--blue);
 }
 
 .winner-remove {
-  border-color: rgba(25, 80, 168, 0.5);
-  background: linear-gradient(180deg, #2f69d0, #1f4fa9);
+  border-color: rgba(12, 60, 148, 0.5);
+  background: linear-gradient(180deg, #40557c, #0c3c94);
   color: #f8fbff;
 }
 

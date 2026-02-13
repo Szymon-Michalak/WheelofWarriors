@@ -150,17 +150,6 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
     drawCtx.strokeStyle = "rgba(0,0,0,0.18)";
     drawCtx.stroke();
 
-    drawCtx.beginPath();
-    drawCtx.arc(0, 0, innerDisk + 18, 0, Math.PI * 2);
-    drawCtx.fillStyle = "#2d5fb8";
-    drawCtx.fill();
-
-    drawCtx.beginPath();
-    drawCtx.arc(0, 0, innerDisk + 12, 0, Math.PI * 2);
-    drawCtx.lineWidth = 8;
-    drawCtx.strokeStyle = "#efb92d";
-    drawCtx.stroke();
-
     drawCtx.save();
     drawCtx.beginPath();
     drawCtx.arc(0, 0, innerDisk, 0, Math.PI * 2);

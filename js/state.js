@@ -19,4 +19,4 @@ export const state = {
   ]
 };
 
-export const palette = ["#2052b2", "#f4dc8f", "#f5c32e", "#4d699e", "#b48700", "#c4b278"];
+export const palette = ["#fbbb24", "#fcd67c", "#0c3c94", "#a48c54", "#966a02", "#40557c"];

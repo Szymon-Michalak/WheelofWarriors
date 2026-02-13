@@ -68,7 +68,7 @@ function parseLine(line) {
   return null;
 }
 
-export function createRankingController({ rankingList, rankingStatus, hoverTooltip }) {
+export function createRankingController({ rankingList, hoverTooltip }) {
   function renderRanking(rows) {
     rankingList.innerHTML = "";
     for (const row of rows) {
@@ -89,6 +89,14 @@ export function createRankingController({ rankingList, rankingStatus, hoverToolt
       item.append(name, time);
       rankingList.appendChild(item);
     }
+  }
+
+  function renderRankingMessage(message) {
+    rankingList.innerHTML = "";
+    const item = document.createElement("li");
+    item.className = "rank-empty";
+    item.textContent = message;
+    rankingList.appendChild(item);
   }
 
   function showTooltip(text, x, y) {
@@ -128,10 +136,21 @@ export function createRankingController({ rankingList, rankingStatus, hoverToolt
 
   async function loadRanking() {
     try {
-      const response = await fetch("data/times.txt", { cache: "no-store" });
-      if (!response.ok) throw new Error("Cannot load data/times.txt");
+      let text = "";
+      let loaded = false;
+      for (const path of ["data/times.txt", "./data/times.txt", "/data/times.txt"]) {
+        try {
+          const response = await fetch(path, { cache: "no-store" });
+          if (!response.ok) continue;
+          text = await response.text();
+          loaded = true;
+          break;
+        } catch {
+          // keep trying alternative paths
+        }
+      }
+      if (!loaded) throw new Error("Cannot load times file");
 
-      const text = await response.text();
       const lines = text.split(/\r?\n/);
       const bestByName = new Map();
 
@@ -154,13 +173,10 @@ export function createRankingController({ rankingList, rankingStatus, hoverToolt
         .sort((a, b) => a.ms - b.ms || a.achievedAt - b.achievedAt || a.name.localeCompare(b.name))
         .slice(0, 5);
 
-      renderRanking(top);
-      rankingStatus.textContent = top.length
-        ? `Loaded ${bestByName.size} unique racers from data/times.txt`
-        : "No valid rows found in data/times.txt";
+      if (top.length) renderRanking(top);
+      else renderRankingMessage("No valid ranking rows in times file.");
     } catch {
-      rankingList.innerHTML = "";
-      rankingStatus.textContent = "data/times.txt not found or unreadable.";
+      renderRankingMessage("Could not load ranking data.");
     }
   }
 

@@ -72,8 +72,8 @@ export function createWinnerModalController({
 
     // striped background from previous export style
     const backdrop = ctx.createLinearGradient(0, 0, width, height);
-    backdrop.addColorStop(0, "#2a64b8");
-    backdrop.addColorStop(1, "#19478f");
+    backdrop.addColorStop(0, "#40557c");
+    backdrop.addColorStop(1, "#0c3c94");
     ctx.fillStyle = backdrop;
     ctx.fillRect(0, 0, width, height);
 
@@ -87,7 +87,7 @@ export function createWinnerModalController({
     }
 
     const overlay = ctx.createRadialGradient(width * 0.5, height * 0.28, 120, width * 0.5, height * 0.28, width * 0.9);
-    overlay.addColorStop(0, "rgba(26, 79, 170, 0.16)");
+    overlay.addColorStop(0, "rgba(12, 60, 148, 0.16)");
     overlay.addColorStop(1, "rgba(10, 18, 34, 0.46)");
     ctx.fillStyle = overlay;
     ctx.fillRect(0, 0, width, height);
@@ -125,8 +125,8 @@ export function createWinnerModalController({
     const chipX = width / 2 - chipW / 2;
     const chipY = cardY - chipH / 2 + 4;
     const chipGrad = ctx.createLinearGradient(chipX, chipY, chipX, chipY + chipH);
-    chipGrad.addColorStop(0, "#2d66ca");
-    chipGrad.addColorStop(1, "#1d4da5");
+    chipGrad.addColorStop(0, "#40557c");
+    chipGrad.addColorStop(1, "#0c3c94");
     ctx.fillStyle = chipGrad;
     ctx.strokeStyle = "rgba(156, 189, 243, 0.55)";
     ctx.lineWidth = 2;
@@ -146,7 +146,7 @@ export function createWinnerModalController({
     const nameSize = fitFontSize(ctx, name, nameMaxWidth, 188, 58);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#1d468f";
+    ctx.fillStyle = "#0c3c94";
     ctx.font = `900 ${nameSize}px 'Avenir Next', 'Segoe UI', sans-serif`;
     ctx.fillText(name, width / 2, cardY + cardH / 2 + 24);
 
