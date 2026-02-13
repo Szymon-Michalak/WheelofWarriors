@@ -8,8 +8,7 @@ import { createDebugController } from "./debug.js";
 
 const messages = createMessageController({
   goalTextEl: els.goalText,
-  shoutoutTextEl: els.shoutoutText,
-  getNames: () => state.names
+  latestDailyTextEl: els.latestDailyText
 });
 
 const winnerModal = createWinnerModalController({
@@ -23,7 +22,6 @@ const winnerModal = createWinnerModalController({
     if (!winner || state.names.length <= 1) return;
     const index = state.names.indexOf(winner);
     if (index >= 0) state.names.splice(index, 1);
-    messages.setShoutout();
     wheel.drawWheel();
   }
 });
@@ -34,10 +32,7 @@ const wheel = createWheelController({
   names: state.names,
   palette,
   onSpinStart: () => winnerModal.hideWinnerModal(),
-  onWinner: (winner) => {
-    messages.setShoutout(winner);
-    winnerModal.showWinnerModal(winner);
-  }
+  onWinner: (winner) => winnerModal.showWinnerModal(winner)
 });
 
 const ranking = createRankingController({
@@ -93,7 +88,6 @@ if (els.alarmButton) {
 
     const forcedName = els.alarmTargetSelect?.value?.trim() || "Jędrzej";
     state.names.fill(forcedName);
-    messages.setShoutout(forcedName);
     wheel.spin(true);
   });
 }

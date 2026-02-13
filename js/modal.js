@@ -116,7 +116,7 @@ export function createWinnerModalController({
     ctx.stroke();
 
     // winner header chip
-    const chipLabel = "WE HAVE A WINNER!";
+    const chipLabel = "MAMY ZWYCIĘZCĘ!";
     const chipLabelSize = fitFontSize(ctx, chipLabel, 430, 62, 30);
     ctx.font = `800 ${chipLabelSize}px 'Avenir Next', 'Segoe UI', sans-serif`;
     const chipTextWidth = ctx.measureText(chipLabel).width;
@@ -178,7 +178,7 @@ export function createWinnerModalController({
 
       if (navigator.clipboard && window.ClipboardItem) {
         await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-        winnerCopy.textContent = "Copied";
+        winnerCopy.textContent = "Skopiowano";
       } else {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -186,14 +186,14 @@ export function createWinnerModalController({
         link.download = `winner-${lastWinner}.png`;
         link.click();
         URL.revokeObjectURL(url);
-        winnerCopy.textContent = "Downloaded";
+        winnerCopy.textContent = "Pobrano";
       }
     } catch {
-      winnerCopy.textContent = "Failed";
+      winnerCopy.textContent = "Błąd";
     }
 
     setTimeout(() => {
-      winnerCopy.textContent = "Copy Image";
+      winnerCopy.textContent = "Kopiuj obrazek";
     }, 1200);
   }
 

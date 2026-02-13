@@ -8,7 +8,7 @@ export const els = {
   rankingList: document.getElementById("rankingList"),
   alarmButton: document.getElementById("alarmButton"),
   goalText: document.getElementById("goalText"),
-  shoutoutText: document.getElementById("shoutoutText"),
+  latestDailyText: document.getElementById("latestDailyText"),
   winnerModal: document.getElementById("winnerModal"),
   winnerName: document.getElementById("winnerName"),
   winnerCopy: document.getElementById("winnerCopy"),
