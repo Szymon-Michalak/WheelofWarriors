@@ -803,37 +803,34 @@ body.ui-ready .app {
     min-height: 100vh;
     align-items: center;
     gap: 12px;
+    padding: 10px 10px 14px;
   }
 
   .side-column {
     height: auto;
+    padding: 0;
   }
 
   .wheel-area {
-    min-height: auto;
-  }
-
-  .goal-card {
-    position: static;
+    min-height: 100svh;
     width: 100%;
-    max-width: none;
-    margin-bottom: 10px;
-  }
-
-  .latest-daily-card {
-    position: static;
-    width: 100%;
-    max-width: none;
-    margin-top: 10px;
-    margin-bottom: 6px;
+    padding: 8px 0;
+    justify-content: center;
+    align-items: center;
   }
 
   .wheel-stack {
-    width: min(72vh, 94vw, 860px);
+    width: min(70vh, 95vw, 860px);
+    flex: 0 0 auto;
   }
 
   .ranking-panel {
     flex: initial;
+  }
+
+  .debug-panel[open] .debug-body {
+    position: static;
+    margin-top: 10px;
   }
 
   .winner-actions {
@@ -842,5 +839,197 @@ body.ui-ready .app {
 
   .winner-btn {
     width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .goal-card {
+    top: 8px;
+    left: 8px;
+    min-width: 0;
+    width: min(58vw, 330px);
+    max-width: 330px;
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  .latest-daily-card {
+    left: 8px;
+    bottom: 8px;
+    min-width: 0;
+    width: min(68vw, 360px);
+    max-width: 360px;
+    padding: 9px 12px;
+    border-radius: 12px;
+  }
+
+  .goal-card,
+  .latest-daily-card {
+    box-shadow: var(--panel-shadow-soft);
+  }
+
+  .goal-text {
+    font-size: 1.35rem;
+  }
+
+  .latest-name {
+    font-size: 1.2rem;
+  }
+
+  .latest-time-pill {
+    font-size: 0.98rem;
+  }
+
+  .wheel-stack {
+    width: min(92vw, 680px);
+  }
+
+  .pointer {
+    right: -2.8%;
+    width: 78px;
+    height: 62px;
+    filter: drop-shadow(-4px 7px 8px rgba(0, 0, 0, 0.3));
+  }
+
+  .pointer::after {
+    inset: 7px 8px 7px 2px;
+  }
+
+  .ranking-panel {
+    padding: 14px 12px 12px;
+  }
+
+  .ranking-panel h2 {
+    font-size: 1.18rem;
+  }
+
+  .ranking-list li {
+    font-size: 1rem;
+    grid-template-columns: 30px 1fr auto;
+    gap: 8px;
+    padding: 7px 9px;
+  }
+
+  .rank-time {
+    padding: 4px 9px;
+  }
+
+  .alarm-panel {
+    padding: 8px 10px 10px;
+  }
+
+  .alarm-title {
+    font-size: 1.55rem;
+    margin-bottom: 6px;
+  }
+
+  .alarm-button {
+    width: 98px;
+    height: 98px;
+    border-width: 8px;
+  }
+
+  .alarm-subtitle {
+    font-size: 0.88rem;
+    letter-spacing: 0.045em;
+  }
+
+  .winner-modal {
+    padding: 12px;
+  }
+
+  .winner-header {
+    max-width: calc(100% - 26px);
+    text-align: center;
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+  }
+}
+
+@media (max-width: 640px) {
+  .app {
+    gap: 10px;
+    padding: 8px 8px 12px;
+  }
+
+  .goal-card {
+    width: min(72vw, 290px);
+    max-width: 290px;
+    padding: 8px 10px;
+  }
+
+  .latest-daily-card {
+    width: min(78vw, 320px);
+    max-width: 320px;
+    padding: 8px 10px;
+  }
+
+  .goal-label,
+  .latest-daily-label {
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+  }
+
+  .goal-text {
+    font-size: 1.2rem;
+  }
+
+  .latest-head {
+    gap: 8px;
+  }
+
+  .latest-name {
+    font-size: 1.08rem;
+  }
+
+  .latest-time-pill {
+    font-size: 0.9rem;
+    padding: 3px 8px;
+  }
+
+  .latest-date {
+    font-size: 0.72rem;
+    margin-top: 3px;
+  }
+
+  .wheel-stack {
+    width: min(96vw, 560px);
+  }
+
+  .pointer {
+    right: -2.2%;
+    width: 66px;
+    height: 54px;
+  }
+
+  .pointer::after {
+    inset: 6px 7px 6px 2px;
+  }
+
+  .ranking-panel h2::after {
+    font-size: 0.67rem;
+  }
+
+  .debug-controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .debug-target-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .debug-run {
+    width: 100%;
+  }
+}
+
+@media (hover: none) {
+  .ranking-list li:hover,
+  .winner-btn:hover,
+  .alarm-button:hover {
+    transform: none;
+    box-shadow: none;
+    filter: none;
   }
 }
