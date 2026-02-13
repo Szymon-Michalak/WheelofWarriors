@@ -13,20 +13,36 @@ export function createWinnerModalController({
     if (!winnerModal) return;
 
     const colors = ["#ffd84d", "#4ca5ff", "#ff6767", "#5ee68b", "#f7f7ff"];
-    const count = 42;
+    const waves = [
+      { delay: 0, count: 52 },
+      { delay: 180, count: 38 },
+      { delay: 340, count: 24 }
+    ];
     const fragment = document.createDocumentFragment();
 
-    for (let i = 0; i < count; i++) {
-      const piece = document.createElement("span");
-      piece.className = "confetti-piece";
-      piece.style.left = `${15 + Math.random() * 70}%`;
-      piece.style.setProperty("--dx", `${-160 + Math.random() * 320}px`);
-      piece.style.setProperty("--dr", `${-300 + Math.random() * 600}deg`);
-      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-      piece.style.animationDelay = `${Math.random() * 120}ms`;
-      piece.style.animationDuration = `${700 + Math.random() * 360}ms`;
-      fragment.appendChild(piece);
-      setTimeout(() => piece.remove(), 1600);
+    for (const wave of waves) {
+      for (let i = 0; i < wave.count; i++) {
+        const piece = document.createElement("span");
+        piece.className = "confetti-piece";
+
+        const width = 6 + Math.random() * 10;
+        const height = 8 + Math.random() * 14;
+        piece.style.setProperty("--w", `${width.toFixed(1)}px`);
+        piece.style.setProperty("--h", `${height.toFixed(1)}px`);
+        piece.style.left = `${8 + Math.random() * 84}%`;
+        piece.style.setProperty("--start-y", `${-4 + Math.random() * 6}%`);
+        piece.style.setProperty("--dx", `${-260 + Math.random() * 520}px`);
+        piece.style.setProperty("--dy", `${420 + Math.random() * 280}px`);
+        piece.style.setProperty("--dr", `${-560 + Math.random() * 1120}deg`);
+        piece.style.setProperty("--sx", `${0.85 + Math.random() * 0.5}`);
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.borderRadius = Math.random() < 0.34 ? "50%" : "2px";
+        piece.style.animationDelay = `${wave.delay + Math.random() * 220}ms`;
+        piece.style.animationDuration = `${1200 + Math.random() * 1200}ms`;
+
+        fragment.appendChild(piece);
+        setTimeout(() => piece.remove(), 3400);
+      }
     }
 
     winnerModal.appendChild(fragment);
