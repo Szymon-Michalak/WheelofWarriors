@@ -41,6 +41,10 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
     drawWheel();
   };
 
+  // Rotate the wheel via compositor/GPU instead of redrawing on every animation frame.
+  canvas.style.transformOrigin = "50% 50%";
+  canvas.style.willChange = "transform";
+
   function textColor(hex) {
     const value = hex.replace("#", "");
     const r = parseInt(value.slice(0, 2), 16);
@@ -196,7 +200,7 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
     drawCtx.restore();
   }
 
-  function drawWheel() {
+  function paintWheelStatic() {
     const cacheKey = `${names.join("\u0001")}|${centerLogoLoaded ? 1 : 0}`;
     if (cacheKey !== wheelCacheKey) {
       renderWheelStatic(wheelCacheCtx);
@@ -204,11 +208,16 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
     }
 
     ctx.clearRect(0, 0, size, size);
-    ctx.save();
-    ctx.translate(center, center);
-    ctx.rotate(rotation);
-    ctx.drawImage(wheelCacheCanvas, -center, -center, size, size);
-    ctx.restore();
+    ctx.drawImage(wheelCacheCanvas, 0, 0, size, size);
+  }
+
+  function applyRotation() {
+    canvas.style.transform = `rotate(${rotation}rad)`;
+  }
+
+  function drawWheel() {
+    paintWheelStatic();
+    applyRotation();
   }
 
   function playTick() {
@@ -266,6 +275,7 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
     spinRunId += 1;
     const runId = spinRunId;
     spinning = true;
+    drawWheel();
     if (onSpinStart) onSpinStart();
 
     const startRotation = rotation;
@@ -304,7 +314,7 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
         lastTickIndex = index;
       }
 
-      drawWheel();
+      applyRotation();
 
       if (t < 1) {
         requestAnimationFrame(frame);
@@ -312,7 +322,7 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
       }
 
       rotation = target;
-      drawWheel();
+      applyRotation();
       spinning = false;
       idleEnabled = false;
       if (onWinner) onWinner(winnerAtStop ?? "Unknown");
@@ -333,7 +343,7 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
     idleLastTs = ts;
 
     rotation += idleAngularSpeed * (dt / 1000);
-    drawWheel();
+    applyRotation();
 
     idleRafId = requestAnimationFrame(idleFrame);
   }
@@ -345,6 +355,7 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
 
   ensureIdleSpin();
   drawHintLayer();
+  drawWheel();
 
   return { drawWheel, spin };
 }
