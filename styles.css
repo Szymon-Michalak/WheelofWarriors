@@ -45,6 +45,14 @@ body {
   height: 100vh;
   align-items: center;
   padding: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 340ms ease, transform 340ms ease;
+}
+
+body.ui-ready .app {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .side-column {

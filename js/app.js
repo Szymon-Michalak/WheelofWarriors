@@ -94,9 +94,7 @@ if (els.alarmButton) {
 
 function renderBaseUi() {
   wheel.drawWheel();
-  ranking.loadRanking();
   ranking.setupTooltipHandlers();
-  messages.loadSources();
   debug.setup();
 }
 
@@ -111,5 +109,18 @@ async function initNames() {
   }
 }
 
-renderBaseUi();
-initNames();
+async function init() {
+  renderBaseUi();
+
+  try {
+    const loadPromise = Promise.allSettled([initNames(), ranking.loadRanking(), messages.loadSources()]);
+    const maxWait = new Promise((resolve) => setTimeout(resolve, 900));
+    await Promise.race([loadPromise, maxWait]);
+  } finally {
+    setTimeout(() => {
+      document.body.classList.add("ui-ready");
+    }, 120);
+  }
+}
+
+init();
