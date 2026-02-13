@@ -93,7 +93,7 @@ function formatTime(ms) {
 function formatDay(dayKey) {
   const dayMs = Date.parse(`${dayKey}T00:00:00Z`);
   if (!Number.isFinite(dayMs)) return dayKey;
-  return new Date(dayMs).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  return new Date(dayMs).toLocaleDateString("pl-PL", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function escapeHtml(value) {

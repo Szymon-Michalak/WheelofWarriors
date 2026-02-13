@@ -217,25 +217,34 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     tickLock = true;
+    const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
+    const highpass = audioCtx.createBiquadFilter();
 
-    osc.type = "square";
-    osc.frequency.value = 740;
+    osc.type = "triangle";
+    const base = 1160 + Math.random() * 90;
+    osc.frequency.setValueAtTime(base, now);
+    osc.frequency.exponentialRampToValueAtTime(base * 0.9, now + 0.018);
+
+    highpass.type = "highpass";
+    highpass.frequency.setValueAtTime(650, now);
+    highpass.Q.value = 0.55;
+
     gain.gain.value = 0.0001;
+    gain.gain.exponentialRampToValueAtTime(0.036, now + 0.002);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.026);
 
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(highpass);
+    highpass.connect(audioCtx.destination);
 
-    const now = audioCtx.currentTime;
-    gain.gain.exponentialRampToValueAtTime(0.11, now + 0.004);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
     osc.start(now);
-    osc.stop(now + 0.05);
+    osc.stop(now + 0.028);
 
     setTimeout(() => {
       tickLock = false;
-    }, 24);
+    }, 18);
   }
 
   function spin(force = false) {

@@ -46,7 +46,7 @@ function parseDateToMs(value) {
 
 function formatDate(ms) {
   if (ms === null) return "Unknown date";
-  return new Date(ms).toLocaleDateString("en-GB", {
+  return new Date(ms).toLocaleDateString("pl-PL", {
     year: "numeric",
     month: "short",
     day: "2-digit"
@@ -73,7 +73,7 @@ export function createRankingController({ rankingList, hoverTooltip }) {
     rankingList.innerHTML = "";
     for (const row of rows) {
       const item = document.createElement("li");
-      const achievedLabel = `Achieved: ${formatDate(row.achievedAt)}`;
+      const achievedLabel = `Ustanowiono: ${formatDate(row.achievedAt)}`;
       item.dataset.tip = achievedLabel;
 
       const name = document.createElement("span");

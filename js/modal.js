@@ -151,7 +151,7 @@ export function createWinnerModalController({
     ctx.fillText(name, width / 2, cardY + cardH / 2 + 24);
 
     // generated date (e.g. 13 Feb 2026)
-    const generatedDate = new Intl.DateTimeFormat("en-GB", {
+    const generatedDate = new Intl.DateTimeFormat("pl-PL", {
       day: "numeric",
       month: "short",
       year: "numeric"
