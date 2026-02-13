@@ -201,15 +201,32 @@ body {
 
 .pointer {
   position: absolute;
-  right: -2.8%;
+  right: -3.4%;
   top: 50%;
   transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-top: 28px solid transparent;
-  border-bottom: 28px solid transparent;
-  border-right: 72px solid #ebedf2;
-  filter: drop-shadow(-4px 6px 4px rgba(0, 0, 0, 0.25));
+  width: 96px;
+  height: 76px;
+  pointer-events: none;
+  filter: drop-shadow(-5px 8px 8px rgba(0, 0, 0, 0.28));
+}
+
+.pointer::before,
+.pointer::after {
+  content: "";
+  position: absolute;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+}
+
+.pointer::before {
+  inset: 0;
+  background: linear-gradient(155deg, #f7f9ff 0%, #dde4ef 56%, #c4ccda 100%);
+}
+
+.pointer::after {
+  inset: 8px 10px 8px 0;
+  background:
+    radial-gradient(circle at 28% 34%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 54%),
+    linear-gradient(150deg, #edf2fb 0%, #d2d9e6 66%, #bcc6d6 100%);
 }
 
 .ranking-panel {

@@ -1,6 +1,2 @@
 # One sprint goal per line
-being cool
-ship with confidence
-no blockers today
-quality first
-clean handoff
+Spróbować się wyrobić
