@@ -1,4 +1,12 @@
-export function createWinnerModalController({ winnerModal, winnerName, winnerClose, winnerRemove, winnerCard, onRemove }) {
+export function createWinnerModalController({
+  winnerModal,
+  winnerName,
+  winnerCopy,
+  winnerClose,
+  winnerRemove,
+  winnerCard,
+  onRemove
+}) {
   let lastWinner = null;
 
   function launchConfetti() {
@@ -40,6 +48,155 @@ export function createWinnerModalController({ winnerModal, winnerName, winnerClo
     winnerModal.classList.add("hidden");
   }
 
+  function fitFontSize(ctx, text, maxWidth, maxSize, minSize) {
+    let size = maxSize;
+    while (size > minSize) {
+      ctx.font = `900 ${size}px 'Avenir Next', 'Segoe UI', sans-serif`;
+      if (ctx.measureText(text).width <= maxWidth) return size;
+      size -= 2;
+    }
+    return minSize;
+  }
+
+  async function createWinnerImageBlob(name) {
+    const exportScale = 2;
+    const width = 1400;
+    const height = 780;
+    const canvas = document.createElement("canvas");
+    canvas.width = width * exportScale;
+    canvas.height = height * exportScale;
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.scale(exportScale, exportScale);
+
+    // striped background from previous export style
+    const backdrop = ctx.createLinearGradient(0, 0, width, height);
+    backdrop.addColorStop(0, "#2a64b8");
+    backdrop.addColorStop(1, "#19478f");
+    ctx.fillStyle = backdrop;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
+    for (let x = -height; x < width + height; x += 34) {
+      ctx.save();
+      ctx.translate(x, 0);
+      ctx.rotate(-Math.PI / 4);
+      ctx.fillRect(0, 0, 10, height * 2.2);
+      ctx.restore();
+    }
+
+    const overlay = ctx.createRadialGradient(width * 0.5, height * 0.28, 120, width * 0.5, height * 0.28, width * 0.9);
+    overlay.addColorStop(0, "rgba(26, 79, 170, 0.16)");
+    overlay.addColorStop(1, "rgba(10, 18, 34, 0.46)");
+    ctx.fillStyle = overlay;
+    ctx.fillRect(0, 0, width, height);
+
+    const cardW = 1180;
+    const cardH = 500;
+    const cardX = (width - cardW) / 2;
+    const cardY = 106;
+    const radius = 48;
+
+    // winner card shadow and shell
+    ctx.fillStyle = "rgba(9, 18, 34, 0.45)";
+    ctx.beginPath();
+    ctx.roundRect(cardX, cardY + 12, cardW, cardH, radius);
+    ctx.fill();
+
+    const cardBg = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
+    cardBg.addColorStop(0, "rgba(250, 252, 255, 0.96)");
+    cardBg.addColorStop(1, "rgba(237, 243, 252, 0.95)");
+    ctx.fillStyle = cardBg;
+    ctx.strokeStyle = "rgba(146, 170, 210, 0.42)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(cardX, cardY, cardW, cardH, radius);
+    ctx.fill();
+    ctx.stroke();
+
+    // winner header chip
+    const chipLabel = "WE HAVE A WINNER!";
+    const chipLabelSize = fitFontSize(ctx, chipLabel, 430, 62, 30);
+    ctx.font = `800 ${chipLabelSize}px 'Avenir Next', 'Segoe UI', sans-serif`;
+    const chipTextWidth = ctx.measureText(chipLabel).width;
+    const chipW = Math.max(360, Math.min(540, chipTextWidth + 96));
+    const chipH = 86;
+    const chipX = width / 2 - chipW / 2;
+    const chipY = cardY - chipH / 2 + 4;
+    const chipGrad = ctx.createLinearGradient(chipX, chipY, chipX, chipY + chipH);
+    chipGrad.addColorStop(0, "#2d66ca");
+    chipGrad.addColorStop(1, "#1d4da5");
+    ctx.fillStyle = chipGrad;
+    ctx.strokeStyle = "rgba(156, 189, 243, 0.55)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(chipX, chipY, chipW, chipH, 999);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = "#f5f9ff";
+    ctx.font = `800 ${chipLabelSize}px 'Avenir Next', 'Segoe UI', sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(chipLabel, width / 2, chipY + chipH / 2 + 2);
+
+    // winner name (same look as popup, no action buttons area)
+    const nameMaxWidth = cardW - 120;
+    const nameSize = fitFontSize(ctx, name, nameMaxWidth, 188, 58);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#1d468f";
+    ctx.font = `900 ${nameSize}px 'Avenir Next', 'Segoe UI', sans-serif`;
+    ctx.fillText(name, width / 2, cardY + cardH / 2 + 24);
+
+    // generated date (e.g. 13 Feb 2026)
+    const generatedDate = new Intl.DateTimeFormat("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }).format(new Date());
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = "rgba(236, 243, 255, 0.46)";
+    ctx.font = "600 28px 'Avenir Next', 'Segoe UI', sans-serif";
+    ctx.fillText(generatedDate, width / 2, height - 28);
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("Failed to generate image blob"));
+      }, "image/png");
+    });
+  }
+
+  async function copyWinnerImage() {
+    if (!lastWinner) return;
+
+    try {
+      const blob = await createWinnerImageBlob(lastWinner);
+
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        winnerCopy.textContent = "Copied";
+      } else {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `winner-${lastWinner}.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+        winnerCopy.textContent = "Downloaded";
+      }
+    } catch {
+      winnerCopy.textContent = "Failed";
+    }
+
+    setTimeout(() => {
+      winnerCopy.textContent = "Copy Image";
+    }, 1200);
+  }
+
   if (winnerClose) winnerClose.addEventListener("click", hideWinnerModal);
   if (winnerModal) {
     winnerModal.addEventListener("click", (event) => {
@@ -52,6 +209,7 @@ export function createWinnerModalController({ winnerModal, winnerName, winnerClo
       hideWinnerModal();
     });
   }
+  if (winnerCopy) winnerCopy.addEventListener("click", copyWinnerImage);
 
   return { showWinnerModal, hideWinnerModal };
 }

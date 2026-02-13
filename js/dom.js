@@ -11,6 +11,7 @@ export const els = {
   shoutoutText: document.getElementById("shoutoutText"),
   winnerModal: document.getElementById("winnerModal"),
   winnerName: document.getElementById("winnerName"),
+  winnerCopy: document.getElementById("winnerCopy"),
   winnerClose: document.getElementById("winnerClose"),
   winnerRemove: document.getElementById("winnerRemove"),
   winnerCard: document.querySelector(".winner-card"),

@@ -15,6 +15,7 @@ const messages = createMessageController({
 const winnerModal = createWinnerModalController({
   winnerModal: els.winnerModal,
   winnerName: els.winnerName,
+  winnerCopy: els.winnerCopy,
   winnerClose: els.winnerClose,
   winnerRemove: els.winnerRemove,
   winnerCard: els.winnerCard,
