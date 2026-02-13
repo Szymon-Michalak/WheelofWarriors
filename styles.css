@@ -310,6 +310,89 @@ body {
   color: var(--muted);
 }
 
+.debug-panel {
+  padding: 10px 12px 12px;
+}
+
+.debug-panel summary {
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #24426e;
+}
+
+.debug-panel[open] summary {
+  margin-bottom: 10px;
+}
+
+.debug-body {
+  display: grid;
+  gap: 8px;
+}
+
+.debug-controls {
+  display: grid;
+  grid-template-columns: auto 90px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.debug-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4b5f81;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.debug-input {
+  width: 100%;
+  border: 1px solid rgba(19, 34, 61, 0.2);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #223a64;
+  background: #fff;
+}
+
+.debug-run {
+  border: 1px solid rgba(25, 80, 168, 0.45);
+  border-radius: 9px;
+  padding: 7px 10px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f8fbff;
+  background: linear-gradient(180deg, #2f69d0, #1f4fa9);
+  cursor: pointer;
+}
+
+.sim-meta {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #4f6181;
+}
+
+.sim-results {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.sim-results li {
+  font-size: 0.84rem;
+  color: #1f355a;
+  font-variant-numeric: tabular-nums;
+}
+
 .alarm-panel {
   border: 10px solid transparent;
   border-radius: 18px;

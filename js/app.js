@@ -1,0 +1,83 @@
+import { els } from "./dom.js";
+import { state, palette } from "./state.js";
+import { createWheelController, pickWinnerIndex } from "./wheel.js";
+import { createMessageController } from "./messages.js";
+import { createWinnerModalController } from "./modal.js";
+import { createRankingController } from "./ranking.js";
+import { createDebugController } from "./debug.js";
+
+const messages = createMessageController({
+  goalTextEl: els.goalText,
+  shoutoutTextEl: els.shoutoutText,
+  getNames: () => state.names
+});
+
+const winnerModal = createWinnerModalController({
+  winnerModal: els.winnerModal,
+  winnerName: els.winnerName,
+  winnerClose: els.winnerClose,
+  winnerRemove: els.winnerRemove,
+  winnerCard: els.winnerCard,
+  onRemove: (winner) => {
+    if (!winner || state.names.length <= 1) return;
+    const index = state.names.indexOf(winner);
+    if (index >= 0) state.names.splice(index, 1);
+    messages.setShoutout();
+    wheel.drawWheel();
+  }
+});
+
+const wheel = createWheelController({
+  canvas: els.canvas,
+  names: state.names,
+  palette,
+  onSpinStart: () => winnerModal.hideWinnerModal(),
+  onWinner: (winner) => {
+    messages.setShoutout(winner);
+    winnerModal.showWinnerModal(winner);
+  }
+});
+
+const ranking = createRankingController({
+  rankingList: els.rankingList,
+  rankingStatus: els.rankingStatus,
+  hoverTooltip: els.hoverTooltip
+});
+
+const debug = createDebugController({
+  simCountInput: els.simCountInput,
+  runSimButton: els.runSimButton,
+  simMeta: els.simMeta,
+  simResults: els.simResults,
+  getNames: () => state.names,
+  pickWinnerIndex
+});
+
+els.canvas.addEventListener("click", () => wheel.spin());
+window.addEventListener("keydown", (event) => {
+  if (event.ctrlKey && event.key === "Enter") {
+    event.preventDefault();
+    wheel.spin();
+  }
+});
+
+if (els.alarmButton) {
+  els.alarmButton.addEventListener("click", () => {
+    els.alarmButton.classList.add("armed");
+    setTimeout(() => els.alarmButton.classList.remove("armed"), 180);
+
+    state.names.fill("Jędrzej");
+    if (els.rankingStatus) {
+      els.rankingStatus.textContent = "Alarm mode: all wheel entries changed to Jędrzej.";
+    }
+
+    messages.setShoutout("Jędrzej");
+    wheel.spin(true);
+  });
+}
+
+wheel.drawWheel();
+ranking.loadRanking();
+ranking.setupTooltipHandlers();
+messages.loadSources();
+debug.setup();

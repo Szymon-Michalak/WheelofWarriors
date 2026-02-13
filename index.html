@@ -32,6 +32,19 @@
           <p id="rankingStatus" class="ranking-status"></p>
         </section>
 
+        <details class="debug-panel panel-card">
+          <summary>Debug Randomness</summary>
+          <div class="debug-body">
+            <div class="debug-controls">
+              <label class="debug-label" for="simCount">Spins</label>
+              <input id="simCount" class="debug-input" type="number" min="1000" step="1000" value="10000" />
+              <button id="runSim" class="debug-run" type="button">Run Simulation</button>
+            </div>
+            <p id="simMeta" class="sim-meta"></p>
+            <ol id="simResults" class="sim-results"></ol>
+          </div>
+        </details>
+
         <section class="alarm-wrap">
           <section class="alarm-panel" aria-label="Emergency button">
             <p class="alarm-title">Alarm</p>
@@ -56,6 +69,6 @@
       </div>
     </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
   </body>
 </html>
