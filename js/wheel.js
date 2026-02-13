@@ -178,7 +178,7 @@ export function createWheelController({ canvas, hintCanvas, names, palette, onSp
     drawCtx.beginPath();
     drawCtx.arc(0, 0, radius + 2, 0, Math.PI * 2);
     drawCtx.lineWidth = 6;
-    drawCtx.strokeStyle = "rgba(0,0,0,0.18)";
+    drawCtx.strokeStyle = "rgba(150, 106, 2, 0.42)";
     drawCtx.stroke();
 
     drawCtx.save();
