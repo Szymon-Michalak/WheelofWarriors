@@ -4,6 +4,7 @@ document.body.appendChild(hoverTooltip);
 
 export const els = {
   canvas: document.getElementById("wheelCanvas"),
+  hintCanvas: document.getElementById("wheelHintCanvas"),
   rankingList: document.getElementById("rankingList"),
   alarmButton: document.getElementById("alarmButton"),
   goalText: document.getElementById("goalText"),
@@ -16,6 +17,7 @@ export const els = {
   winnerCard: document.querySelector(".winner-card"),
   simCountInput: document.getElementById("simCount"),
   runSimButton: document.getElementById("runSim"),
+  alarmTargetSelect: document.getElementById("alarmTarget"),
   simMeta: document.getElementById("simMeta"),
   simResults: document.getElementById("simResults"),
   hoverTooltip

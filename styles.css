@@ -148,6 +148,15 @@ body {
   display: block;
 }
 
+#wheelHintCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
 .pointer {
   position: absolute;
   right: -2.8%;
@@ -358,6 +367,10 @@ body {
   align-items: center;
 }
 
+.debug-target-controls {
+  grid-template-columns: auto 1fr;
+}
+
 .debug-label {
   font-size: 0.82rem;
   font-weight: 700;
@@ -375,6 +388,10 @@ body {
   font-weight: 700;
   color: var(--blue-dark);
   background: #fff;
+}
+
+.debug-select {
+  cursor: pointer;
 }
 
 .debug-run {

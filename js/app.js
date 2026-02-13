@@ -30,6 +30,7 @@ const winnerModal = createWinnerModalController({
 
 const wheel = createWheelController({
   canvas: els.canvas,
+  hintCanvas: els.hintCanvas,
   names: state.names,
   palette,
   onSpinStart: () => winnerModal.hideWinnerModal(),
@@ -53,6 +54,30 @@ const debug = createDebugController({
   pickWinnerIndex
 });
 
+function refreshAlarmTargetOptions() {
+  if (!els.alarmTargetSelect) return;
+
+  const defaultTarget = "Jędrzej";
+  const uniqueNames = [...new Set(state.names)];
+  const names = uniqueNames.includes(defaultTarget)
+    ? uniqueNames
+    : [defaultTarget, ...uniqueNames.filter((name) => name !== defaultTarget)];
+
+  const current = els.alarmTargetSelect.value || defaultTarget;
+  els.alarmTargetSelect.innerHTML = "";
+
+  for (const name of names) {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    els.alarmTargetSelect.appendChild(option);
+  }
+
+  els.alarmTargetSelect.value = names.includes(current) ? current : defaultTarget;
+}
+
+refreshAlarmTargetOptions();
+
 els.canvas.addEventListener("click", () => wheel.spin());
 window.addEventListener("keydown", (event) => {
   if (event.ctrlKey && event.key === "Enter") {
@@ -66,8 +91,9 @@ if (els.alarmButton) {
     els.alarmButton.classList.add("armed");
     setTimeout(() => els.alarmButton.classList.remove("armed"), 180);
 
-    state.names.fill("Jędrzej");
-    messages.setShoutout("Jędrzej");
+    const forcedName = els.alarmTargetSelect?.value?.trim() || "Jędrzej";
+    state.names.fill(forcedName);
+    messages.setShoutout(forcedName);
     wheel.spin(true);
   });
 }

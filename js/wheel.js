@@ -3,8 +3,9 @@ export function pickWinnerIndex(names) {
   return Math.floor(Math.random() * names.length);
 }
 
-export function createWheelController({ canvas, names, palette, onSpinStart, onWinner }) {
+export function createWheelController({ canvas, hintCanvas, names, palette, onSpinStart, onWinner }) {
   const ctx = canvas.getContext("2d");
+  const hintCtx = hintCanvas ? hintCanvas.getContext("2d") : null;
   const soundEnabled = true;
 
   const size = canvas.width;
@@ -28,7 +29,12 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
   let tickLock = false;
   let lastTickIndex = 0;
   let audioCtx = null;
-  let showHint = true;
+  let idleRafId = 0;
+  let idleLastTs = 0;
+  let idleEnabled = true;
+  let hintsVisible = true;
+
+  const idleAngularSpeed = (Math.PI * 2) / 42;
 
   centerLogo.onload = () => {
     centerLogoLoaded = true;
@@ -63,7 +69,7 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
     return indexAtRotation(rotation);
   }
 
-  function drawArcText(text, arcRadius, startAngle, endAngle, tangent, font, drawCtx = ctx) {
+  function drawArcText(text, arcRadius, centerAngle, direction, rotationOffset, font, drawCtx) {
     const letters = [...text];
 
     drawCtx.save();
@@ -71,19 +77,22 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
     drawCtx.font = font;
     drawCtx.textAlign = "center";
     drawCtx.textBaseline = "middle";
-    drawCtx.shadowColor = "rgba(0, 0, 0, 0.38)";
-    drawCtx.shadowBlur = 8;
-    drawCtx.shadowOffsetY = 4;
+    drawCtx.shadowColor = "rgba(0, 0, 0, 0.42)";
+    drawCtx.shadowBlur = 10;
+    drawCtx.shadowOffsetY = 5;
+    drawCtx.lineWidth = 4;
+    drawCtx.strokeStyle = "rgba(9, 18, 34, 0.5)";
 
-    const letterSpacingPx = 1.5;
+    const letterSpacingPx = 2;
     const widths = letters.map((letter) => drawCtx.measureText(letter).width);
     const totalWidth =
       widths.reduce((sum, width) => sum + width, 0) + letterSpacingPx * Math.max(letters.length - 1, 0);
-    const availableArc = Math.abs(endAngle - startAngle) * arcRadius;
+    const maxArcSpan = 1.95;
+    const availableArc = maxArcSpan * arcRadius;
     const fitScale = totalWidth > availableArc ? availableArc / totalWidth : 1;
-    const direction = Math.sign(endAngle - startAngle) || 1;
+    const totalAngle = (totalWidth * fitScale) / arcRadius;
 
-    let cursor = startAngle;
+    let cursor = centerAngle - direction * totalAngle * 0.5;
     for (let i = 0; i < letters.length; i++) {
       const charWidth = widths[i] * fitScale;
       const halfAdvance = (charWidth / arcRadius) * 0.5 * direction;
@@ -92,8 +101,9 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
       drawCtx.save();
       drawCtx.rotate(cursor);
       drawCtx.translate(arcRadius, 0);
-      drawCtx.rotate((tangent * Math.PI) / 2);
+      drawCtx.rotate(rotationOffset);
       if (fitScale !== 1) drawCtx.scale(fitScale, fitScale);
+      drawCtx.strokeText(letters[i], 0, 0);
       drawCtx.fillText(letters[i], 0, 0);
       drawCtx.restore();
 
@@ -102,6 +112,27 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
     }
 
     drawCtx.restore();
+  }
+
+  function drawHintLayer() {
+    if (!hintCtx) return;
+
+    hintCtx.clearRect(0, 0, size, size);
+    hintCtx.save();
+    hintCtx.translate(center, center);
+
+    drawArcText("Click to spin", radius * 0.54, -Math.PI / 2, 1, Math.PI / 2, "900 76px 'Avenir Next', sans-serif", hintCtx);
+    drawArcText(
+      "or press ctrl+enter",
+      radius * 0.69,
+      Math.PI / 2,
+      -1,
+      -Math.PI / 2,
+      "900 68px 'Avenir Next', sans-serif",
+      hintCtx
+    );
+
+    hintCtx.restore();
   }
 
   function renderWheelStatic(drawCtx) {
@@ -162,24 +193,11 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
     }
     drawCtx.restore();
 
-    if (showHint) {
-      drawArcText("Click to spin", radius * 0.52, -2.32, -0.78, 1, "700 48px 'Avenir Next', sans-serif", drawCtx);
-      drawArcText(
-        "or press ctrl+enter",
-        radius * 0.68,
-        0.55,
-        2.2,
-        -1,
-        "700 44px 'Avenir Next', sans-serif",
-        drawCtx
-      );
-    }
-
     drawCtx.restore();
   }
 
   function drawWheel() {
-    const cacheKey = `${names.join("\u0001")}|${showHint ? 1 : 0}|${centerLogoLoaded ? 1 : 0}`;
+    const cacheKey = `${names.join("\u0001")}|${centerLogoLoaded ? 1 : 0}`;
     if (cacheKey !== wheelCacheKey) {
       renderWheelStatic(wheelCacheCtx);
       wheelCacheKey = cacheKey;
@@ -224,10 +242,21 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
     if (names.length === 0) return;
     if (spinning && !force) return;
 
+    if (hintsVisible && hintCtx) {
+      hintCtx.clearRect(0, 0, size, size);
+      if (hintCanvas) hintCanvas.style.display = "none";
+      hintsVisible = false;
+    }
+
+    if (idleRafId) {
+      cancelAnimationFrame(idleRafId);
+      idleRafId = 0;
+      idleLastTs = 0;
+    }
+
     spinRunId += 1;
     const runId = spinRunId;
     spinning = true;
-    showHint = false;
     if (onSpinStart) onSpinStart();
 
     const startRotation = rotation;
@@ -276,11 +305,37 @@ export function createWheelController({ canvas, names, palette, onSpinStart, onW
       rotation = target;
       drawWheel();
       spinning = false;
+      idleEnabled = false;
       if (onWinner) onWinner(winnerAtStop ?? "Unknown");
     }
 
     requestAnimationFrame(frame);
   }
+
+  function idleFrame(ts) {
+    if (!idleEnabled || spinning) {
+      idleRafId = 0;
+      idleLastTs = 0;
+      return;
+    }
+
+    if (!idleLastTs) idleLastTs = ts;
+    const dt = Math.min(48, ts - idleLastTs);
+    idleLastTs = ts;
+
+    rotation += idleAngularSpeed * (dt / 1000);
+    drawWheel();
+
+    idleRafId = requestAnimationFrame(idleFrame);
+  }
+
+  function ensureIdleSpin() {
+    if (idleRafId) return;
+    idleRafId = requestAnimationFrame(idleFrame);
+  }
+
+  ensureIdleSpin();
+  drawHintLayer();
 
   return { drawWheel, spin };
 }
