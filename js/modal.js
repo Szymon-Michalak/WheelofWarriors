@@ -121,10 +121,10 @@ export function createWinnerModalController({
     ctx.fill();
 
     const cardBg = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
-    cardBg.addColorStop(0, "rgba(250, 252, 255, 0.96)");
-    cardBg.addColorStop(1, "rgba(237, 243, 252, 0.95)");
+    cardBg.addColorStop(0, "rgba(255, 252, 241, 0.97)");
+    cardBg.addColorStop(1, "rgba(248, 239, 212, 0.95)");
     ctx.fillStyle = cardBg;
-    ctx.strokeStyle = "rgba(146, 170, 210, 0.42)";
+    ctx.strokeStyle = "rgba(150, 106, 2, 0.35)";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.roundRect(cardX, cardY, cardW, cardH, radius);
@@ -141,17 +141,17 @@ export function createWinnerModalController({
     const chipX = width / 2 - chipW / 2;
     const chipY = cardY - chipH / 2 + 4;
     const chipGrad = ctx.createLinearGradient(chipX, chipY, chipX, chipY + chipH);
-    chipGrad.addColorStop(0, "#40557c");
-    chipGrad.addColorStop(1, "#0c3c94");
+    chipGrad.addColorStop(0, "#fcd67c");
+    chipGrad.addColorStop(1, "#fbbb24");
     ctx.fillStyle = chipGrad;
-    ctx.strokeStyle = "rgba(156, 189, 243, 0.55)";
+    ctx.strokeStyle = "rgba(150, 106, 2, 0.58)";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.roundRect(chipX, chipY, chipW, chipH, 999);
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = "#f5f9ff";
+    ctx.fillStyle = "#0c3c94";
     ctx.font = `800 ${chipLabelSize}px 'Avenir Next', 'Segoe UI', sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -174,7 +174,7 @@ export function createWinnerModalController({
     }).format(new Date());
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
-    ctx.fillStyle = "rgba(236, 243, 255, 0.46)";
+    ctx.fillStyle = "rgba(252, 214, 124, 0.65)";
     ctx.font = "600 28px 'Avenir Next', 'Segoe UI', sans-serif";
     ctx.fillText(generatedDate, width / 2, height - 28);
 
