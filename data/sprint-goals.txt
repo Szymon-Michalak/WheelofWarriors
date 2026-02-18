@@ -1,2 +1,2 @@
 # One sprint goal per line
-Spróbować się wyrobić
+Zrozumieć co od nas chce Aptitude
