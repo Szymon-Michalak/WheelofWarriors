@@ -190,18 +190,40 @@ export function createWinnerModalController({
     if (!lastWinner) return;
 
     try {
-      const blob = await createWinnerImageBlob(lastWinner);
+      const blobPromise = createWinnerImageBlob(lastWinner);
+      let copied = false;
+      if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+        const mimeType = "image/png";
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({ [mimeType]: blobPromise })
+          ]);
+          copied = true;
+        } catch {
+          // Retry with a fresh promise wrapper for stricter implementations.
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({ [mimeType]: blobPromise.then((blob) => blob) })
+            ]);
+            copied = true;
+          } catch {
+            copied = false;
+          }
+        }
+      }
 
-      if (navigator.clipboard && window.ClipboardItem) {
-        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      if (copied) {
         winnerCopy.textContent = "Skopiowano";
       } else {
+        const blob = await blobPromise;
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
         link.download = `winner-${lastWinner}.png`;
+        document.body.appendChild(link);
         link.click();
-        URL.revokeObjectURL(url);
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
         winnerCopy.textContent = "Pobrano";
       }
     } catch {
