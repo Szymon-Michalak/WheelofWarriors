@@ -2,7 +2,7 @@
 Wiktoria
 Emil
 Jędrzej
-Joanna
+# Joanna
 Michał
 Kamil
 Krzysiek R
@@ -14,5 +14,5 @@ Klaudia
 Hubert
 Konrad
 Krzysiek S
-Tomasz
+# Tomasz
 Szymon
