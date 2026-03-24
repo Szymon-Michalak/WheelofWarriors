@@ -7,7 +7,7 @@ Michał
 Kamil
 Krzysiek R
 Wojtek
-Grzesiek
+Grzesiek P
 Ewelina
 Patryk
 Klaudia
@@ -16,3 +16,5 @@ Konrad
 Krzysiek S
 # Tomasz
 Szymon
+# Grzesiek S
+# Sebastian
