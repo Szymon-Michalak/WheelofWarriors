@@ -16,5 +16,5 @@ Konrad
 Krzysiek S
 # Tomasz
 Szymon
-# Grzesiek S
-# Sebastian
+Grzesiek S
+Sebastian
