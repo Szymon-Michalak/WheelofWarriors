@@ -17,5 +17,5 @@ Krzysiek S
 # Tomasz
 Szymon
 Grzesiek S
-Sebastian
+# Sebastian
 Jacek
